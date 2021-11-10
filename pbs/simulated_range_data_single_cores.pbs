@@ -66,7 +66,7 @@ then
 END_GUB=$(( SECONDS - START_GUB ))
 
 cd ../
-
+done
 else
 
 cat ~/gubbins_testing_simul_data/sim_data.txt | while read line
@@ -88,7 +88,8 @@ START_GUB=$SECONDS
 --tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE \
 --model JC $ALNFILE
 END_GUB=$(( SECONDS - START_GUB ))
-
+cd ../
+done
 fi
 
 
