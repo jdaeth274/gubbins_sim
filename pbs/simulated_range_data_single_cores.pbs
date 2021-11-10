@@ -45,22 +45,22 @@ cd $MODEL
 if [ $MAR == "mar" ]
 then
 
-	cat ~/gubbins_testing/simul_data/sim_data_list.txt | while read line
-	do
-	BASIO=$(basename $line)
-		if [ -d $BASIO ]
-		then
-			rm -r $BASIO
-			mkdir $BASIO
-		else
-			mkdir $BASIO
-		fi
-	cd $BASIO
+cat ~/gubbins_testing/simul_data/sim_data_list.txt | while read line
+do
+BASIO=$(basename $line)
+if [ -d $BASIO ]
+then
+rm -r $BASIO
+mkdir $BASIO
+else
+mkdir $BASIO
+fi
+cd $BASIO
 
 ## Get the alignment file
-	ALNFILE="${line}/${BASIO}.aln"
-	START_GUB=$SECONDS
-/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix $MODEL --use-time-stamp --threads 1 --verbose \
+ALNFILE="${line}/${BASIO}.aln"
+START_GUB=$SECONDS
+/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-${BASIO}" --use-time-stamp --threads 1 --verbose \
 --tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE --mar \
 --model JC $ALNFILE 
 END_GUB=$(( SECONDS - START_GUB ))
@@ -69,22 +69,22 @@ cd ../
 done
 else
 
-cat ~/gubbins_testing_simul_data/sim_data.txt | while read line
+cat ~/gubbins_testing/simul_data/sim_data_list.txt | while read line
 do
 BASIO=$(basename $line)
 if [ -d $BASIO ]
 then
-	rm -r $BASIO
-	mkdir $BASIO
+rm -r $BASIO
+mkdir $BASIO
 else
-	mkdir $BASIO
+mkdir $BASIO
 fi
 
 cd $BASIO
 
 ALNFILE="${line}/${BASIO}.aln"
 START_GUB=$SECONDS
-/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix $MODEL --use-time-stamp --threads 1 --verbose \
+/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-${BASIO}" --use-time-stamp --threads 1 --verbose \
 --tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE \
 --model JC $ALNFILE
 END_GUB=$(( SECONDS - START_GUB ))
