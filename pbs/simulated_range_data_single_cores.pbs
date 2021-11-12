@@ -45,8 +45,11 @@ cd $MODEL
 if [ $MAR == "mar" ]
 then
 
-cat ~/gubbins_testing/simul_data/sim_data_list.txt | while read line
+while read line
 do
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "In the loooooooooop"
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 BASIO=$(basename $line)
 if [ -d $BASIO ]
 then
@@ -59,18 +62,23 @@ cd $BASIO
 
 ## Get the alignment file
 ALNFILE="${line}/${BASIO}.aln"
+cp $ALNFILE ./
+
 START_GUB=$SECONDS
-/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-${BASIO}" --use-time-stamp --threads 1 --verbose \
+python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-${BASIO}" --use-time-stamp --threads 1 --verbose \
 --tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE --mar \
---model JC $ALNFILE 
+--model JC "${BASIO}.aln" > gubbins_log 2>&1 
 END_GUB=$(( SECONDS - START_GUB ))
 
 cd ../
-done
+done < ~/gubbins_testing/simul_data/sim_data_list.txt
 else
 
-cat ~/gubbins_testing/simul_data/sim_data_list.txt | while read line
+while read line
 do
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo "In the loooooooooooooooooooop "
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 BASIO=$(basename $line)
 if [ -d $BASIO ]
 then
@@ -83,13 +91,14 @@ fi
 cd $BASIO
 
 ALNFILE="${line}/${BASIO}.aln"
+cp $ALNFILE ./
 START_GUB=$SECONDS
-/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-${BASIO}" --use-time-stamp --threads 1 --verbose \
+python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-${BASIO}" --use-time-stamp --threads 1 --verbose \
 --tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE \
---model JC $ALNFILE
+--model JC "${BASIO}.aln" > gubbins_log 2>&1
 END_GUB=$(( SECONDS - START_GUB ))
 cd ../
-done
+done < ~/gubbins_testing/simul_data/sim_data_list.txt
 fi
 
 
