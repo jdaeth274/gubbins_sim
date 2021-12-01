@@ -1,0 +1,103 @@
+#PBS -l select=1:ncpus=1:mem=12gb
+#PBS -l walltime=48:00:00
+#PBS -J 1-18
+
+set -e
+module load anaconda3/personal
+
+source activate gubbins2_env
+
+cd ~/gubbins_testing/18_constant_branch_snp2
+
+if [ $PBS_ARRAY_INDEX -eq 1 ]
+then
+	cat ../simple_complex_models_to_run.txt > models_failed.txt 
+	if [ -f models_finished.txt ]
+	then
+		rm models_finished.txt
+		touch models_finished.txt
+	else
+		touch models_finished.txt
+	fi
+else
+	sleep 3m
+fi
+
+#cat ../models_to_run.txt > models_failed.txt 
+
+MODEL=$( head -n $PBS_ARRAY_INDEX ../simple_complex_models_to_run.txt | tail -n 1)
+
+FIRST_TREE=$( echo $MODEL | awk -F "-" '{print $1}')
+MAIN_TREE=$( echo $MODEL | awk -F "-" '{print $2}')
+MAR=$( echo $MODEL | awk -F "-" '{print $3}')
+
+if [ -d $MODEL ]
+then
+	rm -r $MODEL
+	mkdir $MODEL
+else
+	mkdir $MODEL
+
+fi
+cd $MODEL
+
+if [ $MAR == "mar" ]
+then
+
+while read line <&3;
+do
+BASIO=$(basename $line)
+if [ -d $BASIO ]
+then
+rm -r $BASIO
+mkdir $BASIO
+else
+mkdir $BASIO
+fi
+cd $BASIO
+
+## Get the alignment file
+ALNFILE="${line}/${BASIO}.aln"
+cp $ALNFILE ./
+
+START_GUB=$SECONDS
+python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-${BASIO}" --use-time-stamp --threads 1 --verbose \
+--tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE --mar --min-snps 2 \
+--model JC "${BASIO}.aln" > gubbins_log 2>&1 
+END_GUB=$(( SECONDS - START_GUB ))
+
+cd ../
+done 3< ~/gubbins_testing/simul_data/constant_branch_rate.txt
+else
+
+while read line <&3;
+do
+BASIO=$(basename $line)
+if [ -d $BASIO ]
+then
+rm -r $BASIO
+mkdir $BASIO
+else
+mkdir $BASIO
+fi
+
+cd $BASIO
+
+ALNFILE="${line}/${BASIO}.aln"
+cp $ALNFILE ./
+START_GUB=$SECONDS
+python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-${BASIO}" --use-time-stamp --threads 1 --verbose \
+--tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE --min-snps 2 \
+--model JC "${BASIO}.aln" > gubbins_log 2>&1
+END_GUB=$(( SECONDS - START_GUB ))
+cd ../
+done 3< ~/gubbins_testing/simul_data/constant_branch_rate.txt
+fi
+
+
+#PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
+#echo "Took this long for $MODEL run, $END_GUB" > "../${MODEL}_time.txt"
+#echo "Used this processor for the runs: $PROC" >> "../${MODEL}_time.txt"
+echo "Finished the runs for this model -  ${MODEL}-${PBS_ARRAY_INDEX}" >> "../models_finished.txt"
+sed -i "s/${MODEL}//g" ../models_failed.txt
+sed -i '/^[[:space:]]*$/d' ../models_failed.txt
