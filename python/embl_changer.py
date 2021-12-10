@@ -222,11 +222,12 @@ if __name__ == '__main__':
         ## Set up the pool
         mp_pool = mp.Pool(processes=input_args.threads)
         rough_num = math.ceil(num_lines / input_args.threads)
-        print_file = open(printero, "a")
+        print_file = open(input_args.print_file, "a")
         print_file.write("Starting apply async runs " + str(datetime.datetime.now()) + "\n")
         print_file.write("Starting mem usage (MB): " + str(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2) + "\n")
         print_file.close()
         df_list = [mp_pool.apply_async(table_getter, args=(input_args.embl, rough_num, rn, fs, fe,th)) for fs,fe,rn,th in tot_list]
+        print_file = open(input_args.print_file, "a")
         print_file.write("Finishing apply async runs " + str(datetime.datetime.now()) + "\n")
         print_file.write("Starting mem usage (MB): " + str(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2) + "\n")
         print_file.write("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" + "\n")
