@@ -1,0 +1,29 @@
+#PBS -l select=1:ncpus=1:mem=12gb
+#PBS -l walltime=24:00:00
+#PBS -J 1-18
+set -e
+module load anaconda3/personal
+
+source activate gubbins_git
+
+cd ~/gubbins_testing/18_ft_iq_jar
+
+
+CURRENT_DAT=$(head -n $PBS_ARRAY_INDEX ../simul_data/branch_and_rec_alternating_constant.txt | tail -n 1)
+DAT_BASE=$(basename $CURRENT_DAT)
+DAT_ALN="${DAT_BASE}/${DAT_BASE}.aln"
+
+mkdir $DAT_BASE
+
+cd $DAT_BASE
+
+START_GUB=$SECONDS
+python -m memory_profiler ~/gubbins/python/run_gubbins.py --prefix "ft-iq-jar-${DAT_BASE}" --use-time-stamp --threads 1 --verbose \
+--tree-builder iqtree --first-tree-builder fasttree \
+--model JC "~/gubbins_testing/simul_data/${DAT_ALN}" 
+END_GUB=$(( SECONDS - START_GUB ))
+python ~/gubbins_testing/gubbins_sim/python/embl_changer.py --embl *.embl \
+--output "ft-iq-jar-${DAT_BASE}.embl_branch.csv" --threads 1
+
+printf "Finished in %s (S) \n" $END_GUB
+
