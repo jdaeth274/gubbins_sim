@@ -20,7 +20,7 @@ def get_options():
     parser = argparse.ArgumentParser(description=purpose,
                                      prog='Changing_embl_branch_recon_to_table.py')
 
-    parser.add_argument('--embl', required=True, help='EMBL file to switch over', type=str)
+    parser.add_argument('--embl', required=True, help='EMBL file to switch over', type=str, nargs="+")
     parser.add_argument('--output', required=True, help='Prefix of output files  (required)', type=str)
     parser.add_argument('--threads', default=1, help='Number of threads to use for the switch (must be a multiple of 6)', type=int)
     parser.add_argument('--print-file',default="./printer_output",
@@ -210,13 +210,13 @@ if __name__ == '__main__':
 
     # Get the line num and the number of table rows
 
-    branches_and_bases, num_lines = line_num(input_args.embl)
+    branches_and_bases, num_lines = line_num(input_args.embl[0])
 
     # Check if multiprocessing
     print("Combining rows into csv")
     print("")
     if input_args.threads == 1:
-        newer_table = table_getter(input_args.embl, num_lines, branches_and_bases, 0, num_lines, 1)
+        newer_table = table_getter(input_args.embl[0], num_lines, branches_and_bases, 0, num_lines, 1)
     else:
         tot_list = mp_list(num_lines,input_args.threads)
         ## Set up the pool
