@@ -65,28 +65,51 @@ delim_reader <- function(delim_file){
   return(reccy_csv)
 }
 
+typing_lapply_func <- function(row, reccy_preds){
+  snp_type <- "S"
+  potential_rec <- reccy_preds %>%
+    filter((start_node == row[1]) &  (end_node == row[2]))
+  if(nrow(potential_rec) > 0){
+    
+    if(any(data.table::between(row[5], potential_rec$start, potential_rec$end)))
+      snp_type <- "r"
+  }
+  
+  return(snp_type)
+}
+
+typing_gubbins_rec_apply <- function(reccy_preds, branch_base){
+    snp_types <- apply(X = branch_base, MARGIN = 1, FUN = typing_lapply_func, 
+                            reccy_preds = reccy_preds)
+    branch_base$Type <- snp_types
+    return(branch_base)
+}
+
+
+
 typing_gubbins_rec <- function(reccy_preds, branch_base){
   ## Function to take in branch base and classify each snp,
   ## either r for in a putative recombination event or S for a clonal frame mutation
   #browser()
-  branch_base$Type <- "S"
-  cat("\n")
-  num_zeros <- nchar(nrow(branch_base))
-  num_rows <- nrow(branch_base)
-  for(k in 1:nrow(branch_base)){
-    nchar_k <- nchar(k)
-    nchar_0 <- num_zeros - nchar_k
-    cat("\r", "Completed ", rep(0, nchar_0), k, " of ", num_rows, " SNPs", sep = "")
-    current_snp <- branch_base[k,]
-    potential_rec <- reccy_preds %>%
-      filter((start_node == current_snp$start_node) &  (end_node == current_snp$end_node))
-    if(nrow(potential_rec) > 0){
+  
+    branch_base$Type <- "S"
+    cat("\n")
+    num_zeros <- nchar(nrow(branch_base))
+    num_rows <- nrow(branch_base)
+    for(k in 1:nrow(branch_base)){
+      nchar_k <- nchar(k)
+      nchar_0 <- num_zeros - nchar_k
+      cat("\r", "Completed ", rep(0, nchar_0), k, " of ", num_rows, " SNPs", sep = "")
+      current_snp <- branch_base[k,]
+      potential_rec <- reccy_preds %>%
+        filter((start_node == current_snp$start_node) &  (end_node == current_snp$end_node))
+      if(nrow(potential_rec) > 0){
+        
+        if(any(data.table::between(current_snp$base_number, potential_rec$start, potential_rec$end)))
+           branch_base$Type[k] <- "r"
+      }
       
-      if(any(data.table::between(current_snp$base_number, potential_rec$start, potential_rec$end)))
-         branch_base$Type[k] <- "r"
     }
-    
-  }
   
   return(branch_base)
 }
@@ -238,7 +261,7 @@ data_cleaner <- function(gubbins_gff, gubbins_branch_base_csv, gubbins_tree_file
                          simul_summary_file, simul_tree_file){
   ## Function to load up the neccessary data to check for the Gubbins
   ## SNPs predictions 
-  
+  browser()
   gubbins_reccy_gff <- delim_reader(gubbins_gff)
   gubbins_reccy_csv <- recombination_gff_cleaner(gubbins_reccy_gff)
   
@@ -408,6 +431,17 @@ snp_data <- data_cleaner(gubbins_gff = "fasttree-iqtree-joint-sim-branch-0.1-rec
                          gubbins_tree_file = "fasttree-iqtree-joint-sim-branch-0.1-rec-0.1.node_labelled.final_tree.tre",
                          simul_summary_file = "sim-branch-0.1-rec-0.1.summary",
                          simul_tree_file = "sim-branch-0.1-rec-0.1.tree")
+snp2_data <- data_cleaner(gubbins_gff = "./sim-0.1-snp2/ft-iq-jar-sim-branch-0.1-rec-0.1.recombination_predictions.gff",
+                          gubbins_branch_base_csv = "./sim-0.1-snp2/ft-iq-jar-sim-branch-0.1-rec-0.1.embl_branch.csv.csv",
+                          gubbins_tree_file = "./sim-0.1-snp2/ft-iq-jar-sim-branch-0.1-rec-0.1.node_labelled.final_tree.tre",
+                          simul_summary_file = "sim-branch-0.1-rec-0.1.summary",
+                          simul_tree_file = "sim-branch-0.1-rec-0.1.tree")
+
+snp2_data_0.5 <- data_cleaner(gubbins_gff = "./sim-0.5-snp2/ft-iq-jar-sim-branch-0.5-rec-0.5.recombination_predictions.gff",
+                              gubbins_branch_base_csv = "./sim-0.5-snp2/ft-iq-jar-sim-branch-0.5-rec-0.5.embl_branch.csv.csv",
+                              gubbins_tree_file = "./sim-0.5-snp2/ft-iq-jar-sim-branch-0.5-rec-0.5.node_labelled.final_tree.tre",
+                              simul_summary_file = "sim-rec-0.5_ft_iq_data/sim-branch-0.5-rec-0.5.summary",
+                              simul_tree_file = "sim-rec-0.5_ft_iq_data/sim-branch-0.5-rec-0.5.tree")
 snp_data_0.5 <- data_cleaner(gubbins_gff = "./sim-rec-0.5_ft_iq_data/fasttree-iqtree-joint.recombination_predictions.gff",
                              gubbins_branch_base_csv = "./sim-rec-0.5_ft_iq_data/fasttree-iqtree-joint.embl_branch_base.csv.csv",
                              gubbins_tree_file = "./sim-rec-0.5_ft_iq_data/fasttree-iqtree-joint.node_labelled.final_tree.tre",
@@ -432,10 +466,19 @@ test_out <- simul_looper(snp_data$gubbins_snps, snp_data$simul_snps, taxa_step =
 test_out$sens_plot
 test_out$ppv_plot
 
+test_out_snp2 <- simul_looper(snp2_data$gubbins_snps, snp2_data$simul_snps, taxa_step = "index",
+                              branch_rate = 0.1, rec_rate = 0.1)
+
 test_out_0.5 <- simul_looper(snp_data_0.5$gubbins_snps, snp_data_0.5$simul_snps, taxa_step = "index",
                              branch_rate = 0.5, rec_rate = 0.5)
 test_out_0.5$sens_plot
 test_out_0.5$ppv_plot
+
+test_out_0.5_snp2 <- simul_looper(snp2_data_0.5$gubbins_snps, snp2_data_0.5$simul_snps, taxa_step = "index",
+                             branch_rate = 0.5, rec_rate = 0.5)
+test_out_0.5_snp2$sens_plot
+test_out_0.5_snp2$ppv_plot
+
 
 ## Lets plot out the success by taxa depth 
 gubbins_res_depth <- gubbins_res %>%
