@@ -71,7 +71,7 @@ typing_lapply_func <- function(row, reccy_preds){
     filter((start_node == row[1]) &  (end_node == row[2]))
   if(nrow(potential_rec) > 0){
     
-    if(any(data.table::between(row[5], potential_rec$start, potential_rec$end)))
+    if(any(data.table::between(as.integer(row[5]), potential_rec$start, potential_rec$end)))
       snp_type <- "r"
   }
   
@@ -421,6 +421,22 @@ simul_looper <- function(gubbins_snps, simul_snps, taxa_step = "taxa",
 ###############################################################################
 ## Load up the Gubbins recombinations data ####################################
 ###############################################################################
+
+classic_snps <- typing_gubbins_rec(gubbins_reccy_csv, gubbins_branch_base)
+updated_snps <- typing_gubbins_rec_apply(gubbins_reccy_csv, gubbins_branch_base)
+
+dplyr::count(classic_snps, Type)
+dplyr::count(updated_snps, Type)
+
+tot_snps <- classic_snps %>% rename(type_c = Type) %>%
+  left_join(updated_snps %>% rename(type_u = Type)) %>%
+  mutate(mismatch = ifelse(type_c == type_u, "No","Yes"))
+
+head(tot_snps[tot_snps$mismatch == "Yes",])
+
+gubbins_reccy_csv %>% filter(start_node == "Node_1") %>%
+  filter(end_node == "taxon_1")
+
 
 ## Lets run this on the fasttree-iqtree-joint rec 0.1 branch 0.1 dataset initially
 
