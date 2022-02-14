@@ -15,6 +15,3 @@ Activate this environment with
 
     conda activate gubbins_testing 
 
-
-
-This should work
