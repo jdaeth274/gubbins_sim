@@ -5,6 +5,7 @@
 require(argparse, quietly = TRUE, warn.conflicts = FALSE)
 require(dplyr, quietly = TRUE,warn.conflicts = FALSE)
 require(stringr, quietly = TRUE,warn.conflicts = FALSE)
+require(data.table, quietly = TRUE, warn.conflicts = FALSE)
 ###############################################################################
 ## FUNCTIONS ##################################################################
 ###############################################################################

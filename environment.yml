@@ -1,0 +1,20 @@
+name: gubbins_testing
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+  - r
+dependencies:
+  - biopython
+  - pandas
+  - argparse
+  - blast
+  - numpy
+  - r-dplyr
+  - tqdm
+  - r-argparse
+  - r-data.table
+  - r-stringr
+  - dendropy
+  - numpy
+  - psutil
