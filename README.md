@@ -11,7 +11,7 @@ Then use the environment.yml file to install the dependencies with conda
 
     conda env create --file=environment.yml
 
-Activate this environment with:
+Activate this environment with
     conda activate gubbins_testing 
 
 This should work
