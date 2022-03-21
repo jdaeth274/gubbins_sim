@@ -72,6 +72,7 @@ do
 	echo "Took this long for $MODEL run, $END_GUB" > "../${MODEL}_time.txt"
 	echo "Used this processor for the runs: $PROC" >> "../${MODEL}_time.txt"
 	rm $ALNFILE
+	python ~/gubbins_testing/gubbins_sim/python --embl *branch_base_reconstruction.embl --output "${MODEL}-rep-5-${BASIO}-JC-JC.embl_csv" --threads 1 
 	cd ../../
 done 3< ~/gubbins_testing/simul_data/constant_epi5_branch_rate.txt
 
@@ -110,7 +111,7 @@ do
 	PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
 	echo "Took this long for $MODEL run, $END_GUB" > "../${MODEL}_time.txt"
 	echo "Used this processor for the runs: $PROC" >> "../${MODEL}_time.txt"
-
+	python ~/gubbins_testing/gubbins_sim/python --embl *branch_base_reconstruction.embl --output "${MODEL}-rep-5-${BASIO}-JC-JC.embl_csv" --threads 1 
 	cd ../../
 done 3< ~/gubbins_testing/simul_data/constant_epi5_branch_rate.txt
 fi
