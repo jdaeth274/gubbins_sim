@@ -261,7 +261,7 @@ data_cleaner <- function(gubbins_gff, gubbins_branch_base_csv, gubbins_tree_file
                          simul_summary_file, simul_tree_file){
   ## Function to load up the neccessary data to check for the Gubbins
   ## SNPs predictions 
-  browser()
+  #browser()
   gubbins_reccy_gff <- delim_reader(gubbins_gff)
   gubbins_reccy_csv <- recombination_gff_cleaner(gubbins_reccy_gff)
   
@@ -442,11 +442,17 @@ gubbins_reccy_csv %>% filter(start_node == "Node_1") %>%
 
 setwd("~/Dropbox/phd/gubbins_testing/gubbins_ppv_data/")
 
-snp_data <- data_cleaner(gubbins_gff = "fasttree-iqtree-joint-sim-branch-0.1-rec-0.1.recombination_predictions.gff",
+snp_data_jar <- data_cleaner(gubbins_gff = "fasttree-iqtree-joint-sim-branch-0.1-rec-0.1.recombination_predictions.gff",
                          gubbins_branch_base_csv = "fasttree-iqtree-joint-sim-branch-0.1-rec-0.1.embl.csv.csv",
                          gubbins_tree_file = "fasttree-iqtree-joint-sim-branch-0.1-rec-0.1.node_labelled.final_tree.tre",
                          simul_summary_file = "sim-branch-0.1-rec-0.1.summary",
                          simul_tree_file = "sim-branch-0.1-rec-0.1.tree")
+snp_data_mar <- data_cleaner(gubbins_gff = "fasttree-iqtree-joint-sim-branch-0.1-rec-0.1.recombination_predictions.gff",
+                             gubbins_branch_base_csv = "fasttree-iqtree-joint-sim-branch-0.1-rec-0.1.embl.csv.csv",
+                             gubbins_tree_file = "fasttree-iqtree-joint-sim-branch-0.1-rec-0.1.node_labelled.final_tree.tre",
+                             simul_summary_file = "sim-branch-0.1-rec-0.1.summary",
+                             simul_tree_file = "sim-branch-0.1-rec-0.1.tree")
+
 snp2_data <- data_cleaner(gubbins_gff = "./sim-0.1-snp2/ft-iq-jar-sim-branch-0.1-rec-0.1.recombination_predictions.gff",
                           gubbins_branch_base_csv = "./sim-0.1-snp2/ft-iq-jar-sim-branch-0.1-rec-0.1.embl_branch.csv.csv",
                           gubbins_tree_file = "./sim-0.1-snp2/ft-iq-jar-sim-branch-0.1-rec-0.1.node_labelled.final_tree.tre",
@@ -478,7 +484,7 @@ dev.off()
 
 
 test_out <- simul_looper(snp_data$gubbins_snps, snp_data$simul_snps, taxa_step = "index",
-                         branch_rate = 0.1, rec_rate = 0.1)
+                         branch_rate = 0.1, rec_rate = 0.1, snps = "S")
 test_out$sens_plot
 test_out$ppv_plot
 
