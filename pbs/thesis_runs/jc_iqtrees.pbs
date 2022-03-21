@@ -1,0 +1,33 @@
+#PBS -l select=1:ncpus=4:mem=2gb
+#PBS -l walltime=24:00:00
+#PBS -J 1-10
+
+set -e
+module load anaconda3/personal
+
+source activate gubbins_git
+
+cd ~/../ephemeral/gubbins_testing/simul_data 
+
+REP=$PBS_ARRAY_INDEX 
+cd "rep_${REP}_data"
+
+if [ -f iqtree_fin.txt ]
+then
+rm iqtree_fin.txt
+fi
+ls -d *-*-*/ | while read line
+do
+cd $line 
+SIM_SETTINGS=$(basename $line)
+IQ_PREFIX="raw-raw-raw-rep-${REP}-${SIM_SETTINGS}-JC-JC"
+ORIG_PREFIX="orig-orig-orig-rep-${REP}-${SIM_SETTINGS}-JC-JC.tre"
+iqtree -v -s *.aln -T 4 -m JC --prefix $IQ_PREFIX
+rm *.ckp.gz *.iqtree *.bionj *.mldist
+cp *.tree $ORIG_PREFIX
+cp *.treefile "${IQ_PREFIX}.tre"
+echo $line >> ../iqtree_fin.txt
+cd ../
+done
+
+

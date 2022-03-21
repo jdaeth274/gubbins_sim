@@ -5,13 +5,13 @@
 set -e
 module load anaconda3/personal
 
-source activate gubbins2_env
+source activate gubbins_git
 
-cd ~/gubbins_testing/18_constant_rec
+cd ~/../ephemeral/gubbins_testing/18_constant_branch_JC_JC_used
 
 if [ $PBS_ARRAY_INDEX -eq 1 ]
 then
-	cat ../simple_complex_models_to_run.txt > models_failed.txt 
+	cat ~/gubbins_testing/simple_complex_models_to_run.txt > models_failed.txt 
 	if [ -f models_finished.txt ]
 	then
 		rm models_finished.txt
@@ -25,7 +25,7 @@ fi
 
 #cat ../models_to_run.txt > models_failed.txt 
 
-MODEL=$( head -n $PBS_ARRAY_INDEX ../simple_complex_models_to_run.txt | tail -n 1)
+MODEL=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/simple_complex_models_to_run.txt | tail -n 1)
 
 FIRST_TREE=$( echo $MODEL | awk -F "-" '{print $1}')
 MAIN_TREE=$( echo $MODEL | awk -F "-" '{print $2}')
@@ -61,13 +61,14 @@ ALNFILE="${line}/${BASIO}.aln"
 cp $ALNFILE ./
 
 START_GUB=$SECONDS
-python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-${BASIO}" --use-time-stamp --threads 1 --verbose \
+/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-${BASIO}-JC-JC" --use-time-stamp --threads 1 --verbose \
 --tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE --mar \
 --model JC "${BASIO}.aln" > gubbins_log 2>&1 
 END_GUB=$(( SECONDS - START_GUB ))
 
 cd ../
-done 3< ~/gubbins_testing/simul_data/constant_rec_rate.txt
+done 3< ~/gubbins_testing/simul_data/constant_epi_branch_rate.txt
+
 else
 
 while read line <&3;
@@ -86,12 +87,12 @@ cd $BASIO
 ALNFILE="${line}/${BASIO}.aln"
 cp $ALNFILE ./
 START_GUB=$SECONDS
-python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-${BASIO}" --use-time-stamp --threads 1 --verbose \
+/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-${BASIO}-JC-JC" --use-time-stamp --threads 1 --verbose \
 --tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE \
 --model JC "${BASIO}.aln" > gubbins_log 2>&1
 END_GUB=$(( SECONDS - START_GUB ))
 cd ../
-done 3< ~/gubbins_testing/simul_data/constant_GTR_rec.txt
+done 3< ~/gubbins_testing/simul_data/constant_epi_branch_rate.txt
 fi
 
 

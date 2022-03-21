@@ -7,7 +7,7 @@ module load anaconda3/personal
 
 source activate bioperl
 
-cd ~/gubbins_testing/simul_data 
+cd ~/gubbins_testing/simul_data/GTR_data
 
 
 
@@ -18,7 +18,7 @@ then
 	echo "wassssssssup"
 else
 
-bash ../gubbins_sim/bash/simul_script.sh $RECCERS 0.1 \
+bash ~/gubbins_testing/gubbins_sim/bash/simul_script_GTR.sh $RECCERS 0.1 \
 ~/gubbins_testing/simul_data/strep_53_uc.aln \
 ~/gubbins_testing/simul_data/26_phage.mfa 
 fi

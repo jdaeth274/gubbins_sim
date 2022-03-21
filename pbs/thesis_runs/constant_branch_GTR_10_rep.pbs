@@ -1,5 +1,5 @@
 #PBS -l select=1:ncpus=1:mem=2gb
-#PBS -l walltime=00:30:00
+#PBS -l walltime=24:00:00
 #PBS -J 1-9
 
 set -e
@@ -7,18 +7,18 @@ module load anaconda3/personal
 
 source activate bioperl
 
-cd ~/gubbins_testing/simul_data 
-
-
+cd ~/../ephemeral/gubbins_testing/simul_data/GTR_data
 
 RECCERS=$(head -n $PBS_ARRAY_INDEX ~/gubbins_testing/gubbins_sim/data/decimals_0.1s.txt | tail -n 1)
 
-if [ $RECCERS == "0.1" ]
-then
-	echo "wassssssssup"
-else
 
-bash ../gubbins_sim/bash/simul_script.sh $RECCERS 0.1 \
+for rep in {1..10}
+do
+cd "rep_${rep}_data"
+bash ~/gubbins_testing/gubbins_sim/bash/simul_script_GTR.sh 0.1 $RECCERS \
 ~/gubbins_testing/simul_data/strep_53_uc.aln \
 ~/gubbins_testing/simul_data/26_phage.mfa 
-fi
+echo "done on sim-branch-0.1-rec_${RECCERS}" >> jobs_done.txt
+cd ../
+done
+
