@@ -71,8 +71,8 @@ do
 	PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
 	echo "Took this long for $MODEL run, $END_GUB" > "../${MODEL}_time.txt"
 	echo "Used this processor for the runs: $PROC" >> "../${MODEL}_time.txt"
-	rm $ALNFILE
-	python ~/gubbins_testing/gubbins_sim/python --embl *branch_base_reconstruction.embl --output "${MODEL}-rep-9-${BASIO}-JC-JC.embl_csv" --threads 1 
+	rm *.aln
+	python ~/gubbins_testing/gubbins_sim/python/embl_changer.py --embl *branch_base_reconstruction.embl --output "${MODEL}-rep-9-${BASIO}-JC-JC.embl_csv" --threads 1 
 	cd ../../
 done 3< ~/gubbins_testing/simul_data/constant_epi9_branch_rate.txt
 
@@ -107,11 +107,11 @@ do
 	--tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE \
 	--model JC "${BASIO}.aln" > gubbins_log 2>&1
 	END_GUB=$(( SECONDS - START_GUB ))
-	rm $ALNFILE
+	rm *.aln
 	PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
 	echo "Took this long for $MODEL run, $END_GUB" > "../${MODEL}_time.txt"
 	echo "Used this processor for the runs: $PROC" >> "../${MODEL}_time.txt"
-	python ~/gubbins_testing/gubbins_sim/python --embl *branch_base_reconstruction.embl --output "${MODEL}-rep-9-${BASIO}-JC-JC.embl_csv" --threads 1 
+	python ~/gubbins_testing/gubbins_sim/python/embl_changer.py --embl *branch_base_reconstruction.embl --output "${MODEL}-rep-9-${BASIO}-JC-JC.embl_csv" --threads 1 
 	cd ../../
 done 3< ~/gubbins_testing/simul_data/constant_epi9_branch_rate.txt
 fi
