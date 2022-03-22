@@ -3,7 +3,8 @@
 set -e
 # Get the rep prefix
 REP_NUM=$1
-
+# Get the directory to the orig and raw trees 
+SIM_TREES="$2/*.tre"
 
 if [ -d "rep_${REP_NUM}_branchs" ]
 then
@@ -49,6 +50,7 @@ do
 cd $sim
 cp *per_branch* ../../"rep_${REP_NUM}_branchs"
 cp *node_labelled* ../../"rep_${REP_NUM}_trees"
+cp $SIM_TREES ../../"rep_${REP_NUM}_trees"
 cp *embl_csv* ../../"rep_${REP_NUM}_embls"
 cp *recombination_predictions.gff* ../../"rep_${REP_NUM}_gffs"
 cd ../
