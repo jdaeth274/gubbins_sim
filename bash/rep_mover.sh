@@ -50,7 +50,7 @@ do
 cd $sim
 cp *per_branch* ../../"rep_${REP_NUM}_branchs"
 cp *node_labelled* ../../"rep_${REP_NUM}_trees"
-cp $SIM_TREES ../../"rep_${REP_NUM}_trees"
+
 cp *embl_csv* ../../"rep_${REP_NUM}_embls"
 cp *recombination_predictions.gff* ../../"rep_${REP_NUM}_gffs"
 cd ../
