@@ -116,6 +116,6 @@ do
 done 3< ~/gubbins_testing/simul_data/constant_epi9_rec_rate.txt
 fi
 
-echo "Finished the runs for this model -  ${MODEL}-${PBS_ARRAY_INDEX}" >> "../models_finished.txt"
-sed -i "s/${MODEL}//g" ../models_failed.txt
-sed -i '/^[[:space:]]*$/d' ../models_failed.txt
+echo "Finished the runs for this model -  ${MODEL}-${PBS_ARRAY_INDEX}" >> "./models_finished.txt"
+sed -i "s/${MODEL}//g" ./models_failed.txt
+sed -i '/^[[:space:]]*$/d' ./models_failed.txt
