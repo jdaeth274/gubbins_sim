@@ -64,7 +64,7 @@ done 3< gubbins_list.txt
 
 TREES_DIR=$(ls -d $PWD/"rep_${REP_NUM}_trees")
 
-ls -d "${SIM}/*-*-*/" > sim_list.txt 
+ls -d "${SIM_TREES}"/*-*-*/ > sim_list.txt 
 while read line <&5
 do
 cd $line

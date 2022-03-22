@@ -5,14 +5,14 @@
 set -e
 module load anaconda3/personal
 
-source activate gubbins2_env
+source activate gubbins_git
 
-cd ~/gubbins_testing/pmen3_testing
+cd /rds/general/user/jd2117/ephemeral/gubbins_testing/pmen3_runs
 
 
 if [ $PBS_ARRAY_INDEX -eq 1 ]
 then
-	cat ../simple_complex_models_to_run.txt > models_failed.txt 
+	cat ~/gubbins_testing/simple_complex_models_to_run.txt > models_failed.txt 
 	if [ -f models_finished.txt ]
 	then
 		rm models_finished.txt
@@ -26,7 +26,7 @@ fi
 
 #cat ../models_to_run.txt > models_failed.txt 
 
-MODEL=$( head -n $PBS_ARRAY_INDEX ../simple_complex_models_to_run.txt | tail -n 1)
+MODEL=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/simple_complex_models_to_run.txt | tail -n 1)
 
 FIRST_TREE=$( echo $MODEL | awk -F "-" '{print $1}')
 MAIN_TREE=$( echo $MODEL | awk -F "-" '{print $2}')
