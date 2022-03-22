@@ -4,7 +4,7 @@ set -e
 # Get the rep prefix
 REP_NUM=$1
 # Get the directory to the orig and raw trees 
-SIM_TREES="$2/*.tre"
+SIM_TREES=$2
 
 if [ -d "rep_${REP_NUM}_branchs" ]
 then
@@ -60,3 +60,15 @@ cd ../
 done 3< gubbins_list.txt
 
 
+## Expecting a link to the rep_x_data for the simul_runs
+
+TREES_DIR=$(ls -d $PWD/"rep_${REP_NUM}_trees")
+
+ls -d "${SIM}/*-*-*/" > sim_list.txt 
+while read line <&5
+do
+cd $line
+cp *.tre $TREES_DIR
+cd ../
+echo $line 
+done 5< sim_list.txt
