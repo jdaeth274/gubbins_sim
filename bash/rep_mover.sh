@@ -43,7 +43,7 @@ ls -d *-*-*/ > gubbins_list.txt
 while read line <&3
 do
 cd $line
-ls -d *-*-*-* > dir_conds.txt
+ls -d *-*-*/ > dir_conds.txt
 while read sim <&4
 do
 cd $sim
