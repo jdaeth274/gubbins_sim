@@ -13,13 +13,13 @@ cd ~/../ephemeral/gubbins_testing/rep_8_runs
 ## Set up the run logging 
 if [ $PBS_ARRAY_INDEX -eq 1 ]
 then
-	cat ~/gubbins_testing/simple_complex_models_to_run.txt > models_failed.txt 
-	if [ -f models_finished.txt ]
+	cat ~/gubbins_testing/simple_complex_models_to_run.txt > models_failed_rec.txt 
+	if [ -f models_finished_rec.txt ]
 	then
-		rm models_finished.txt
-		touch models_finished.txt
+		rm models_finished_rec.txt
+		touch models_finished_rec.txt
 	else
-		touch models_finished.txt
+		touch models_finished_rec.txt
 	fi
 else
 	sleep 3m
@@ -116,6 +116,6 @@ do
 done 3< ~/gubbins_testing/simul_data/constant_epi8_rec_rate.txt
 fi
 
-echo "Finished the runs for this model -  ${MODEL}-${PBS_ARRAY_INDEX}" >> "./models_finished.txt"
-sed -i "s/${MODEL}//g" ./models_failed.txt
-sed -i '/^[[:space:]]*$/d' ./models_failed.txt
+echo "Finished the runs for this model -  ${MODEL}-${PBS_ARRAY_INDEX}" >> "./models_finished_rec.txt"
+sed -i "s/${MODEL}//g" ./models_failed_rec.txt
+sed -i '/^[[:space:]]*$/d' ./models_failed_rec.txt
