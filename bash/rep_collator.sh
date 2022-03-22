@@ -73,6 +73,7 @@ do
 
     cd ../
     echo "Finished on $CURRENT_REP "
-done
+done 3< rep_dirs.txt
+
 
 
