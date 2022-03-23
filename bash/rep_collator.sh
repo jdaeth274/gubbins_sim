@@ -43,16 +43,20 @@ while read line <&3
 do
     cd $line
     CURRENT_REP=$(echo $line | awk -F "_" '{print $2}')
+    printf "Working on rep %s " $CURRENT_REP
     if [ -d "rep_${CURRENT_REP}_branchs" ]
     then
         cp "rep_${CURRENT_REP}_branchs"/* ../jc_rep_10_csvs
+        printf "."
     else
+        echo ""
         echo "No branch directory for rep $CURRENT_REP " 
     fi
 
     if [ -d "rep_${CURRENT_REP}_embls" ]
     then
         cp "rep_${CURRENT_REP}_embls"/* ../jc_rep_10_embls
+        printf "."
     else
         echo "No embl directory for rep $CURRENT_REP "
     fi
@@ -60,6 +64,7 @@ do
     if [ -d "rep_${CURRENT_REP}_gffs" ]
     then
         cp "rep_${CURRENT_REP}_gffs"/* ../jc_rep_10_gffs
+        printf "."
     else
         echo "No gff directory for rep $CURRENT_REP "
     fi
@@ -67,6 +72,7 @@ do
         if [ -d "rep_${CURRENT_REP}_trees" ]
     then
         cp "rep_${CURRENT_REP}_trees"/* ../jc_rep_10_trees
+        printf ". Done \n"
     else
         echo "No tree directory for rep $CURRENT_REP "
     fi
