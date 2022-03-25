@@ -1,0 +1,120 @@
+#PBS -l select=1:ncpus=1:mem=12gb
+#PBS -l walltime=24:00:00
+#PBS -J 1-18
+
+set -e
+module load anaconda3/personal
+
+source activate gubbins_git
+
+## Switch to the run directory 
+cd ~/../ephemeral/gubbins_testing/
+
+## Get the run models 
+MODEL=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/simple_complex_models_to_run.txt | tail -n 1)
+
+FIRST_TREE=$( echo $MODEL | awk -F "-" '{print $1}')
+MAIN_TREE=$( echo $MODEL | awk -F "-" '{print $2}')
+MAR=$( echo $MODEL | awk -F "-" '{print $3}')
+
+if [ $PBS_ARRAY_INDEX -eq 1 ]
+then
+	echo "wooo"
+else
+	sleep 3m
+fi
+
+##Conditional statement for the reconstructions 
+if [ $MAR == "mar" ]
+then
+
+for K in {1..10};
+do
+	REP_DIR="rep_${K}_runs"
+	cd $REP_DIR
+	BASIO="sim-branch-0.1-rec-0.0"
+	if [ -d $BASIO ]
+	then
+		cd $BASIO
+	else
+		mkdir $BASIO
+		cd $BASIO
+	fi
+
+	## Get the alignment file
+
+	if [ -d $MODEL ]
+	then
+		rm -r $MODEL
+		mkdir $MODEL
+	else
+		mkdir $MODEL
+
+	fi
+	cd $MODEL
+
+
+	ALNFILE="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/rep_${K}_data/${BASIO}/${BASIO}.aln"
+	cp $ALNFILE ./
+
+	START_GUB=$SECONDS
+	/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-rep-${K}-${BASIO}-JC-JC" --use-time-stamp --threads 1 --verbose \
+	--tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE --mar \
+	--model JC "${BASIO}.aln" > gubbins_log 2>&1 
+	END_GUB=$(( SECONDS - START_GUB ))
+	PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
+	echo "Took this long for $MODEL run, $END_GUB" > "../${MODEL}_time.txt"
+	echo "Used this processor for the runs: $PROC" >> "../${MODEL}_time.txt"
+	rm *.aln
+	python ~/gubbins_testing/gubbins_sim/python/embl_changer.py --embl *branch_base_reconstruction.embl --output "${MODEL}-rep-${K}-${BASIO}-JC-JC.embl_csv" --threads 1 
+	cd ../../../
+done
+
+else
+
+for K in {1..10};
+do
+	REP_DIR="rep_${K}_runs"
+	cd $REP_DIR
+	BASIO="sim-branch-0.1-rec-0.0"
+	if [ -d $BASIO ]
+	then
+		cd $BASIO
+	else
+		mkdir $BASIO
+		cd $BASIO
+	fi
+
+	## Get the alignment file
+
+	if [ -d $MODEL ]
+	then
+		rm -r $MODEL
+		mkdir $MODEL
+	else
+		mkdir $MODEL
+
+	fi
+	cd $MODEL
+
+
+	ALNFILE="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/rep_${K}_data/${BASIO}/${BASIO}.aln"
+	cp $ALNFILE ./
+
+	START_GUB=$SECONDS
+	/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix "${MODEL}-rep-${K}-${BASIO}-JC-JC" --use-time-stamp --threads 1 --verbose \
+	--tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE \
+	--model JC "${BASIO}.aln" > gubbins_log 2>&1
+	END_GUB=$(( SECONDS - START_GUB ))
+	rm *.aln
+	PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
+	echo "Took this long for $MODEL run, $END_GUB" > "../${MODEL}_time.txt"
+	echo "Used this processor for the runs: $PROC" >> "../${MODEL}_time.txt"
+	python ~/gubbins_testing/gubbins_sim/python/embl_changer.py --embl *branch_base_reconstruction.embl --output "${MODEL}-rep-${K}-${BASIO}-JC-JC.embl_csv" --threads 1 
+	cd ../../../
+done 
+fi
+
+echo "Finished the runs for this model -  ${MODEL}-${PBS_ARRAY_INDEX}" >> "./models_finished_branch.txt"
+sed -i "s/${MODEL}//g" ./models_failed_branch.txt
+sed -i '/^[[:space:]]*$/d' ./models_failed_branch.txt

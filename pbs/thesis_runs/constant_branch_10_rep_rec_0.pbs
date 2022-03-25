@@ -1,0 +1,37 @@
+#PBS -l select=1:ncpus=4:mem=2gb
+#PBS -l walltime=24:00:00
+#PBS -J 1-10
+
+set -e
+module load anaconda3/personal
+
+source activate bioperl
+
+cd ~/../ephemeral/gubbins_testing/simul_data 
+
+
+
+REP=$PBS_ARRAY_INDEX
+
+#if [ $RECCERS == "0.1" ]
+#then
+#	echo "wassssssssup"
+#else
+
+cd "rep_${REP}_data"
+bash ~/gubbins_testing/gubbins_sim/bash/simul_script.sh 0.1 0.0 \
+~/gubbins_testing/simul_data/strep_53_uc.aln \
+~/gubbins_testing/simul_data/26_phage.mfa 
+
+## Make the raw and orig trees
+source activate gubbins_git
+
+SIM_SETTINGS="sim-branch-0.1-rec-0.0"
+cd $SIM_SETTINGS
+IQ_PREFIX="raw-raw-raw-rep-${REP}-${SIM_SETTINGS}-JC-JC"
+ORIG_PREFIX="orig-orig-orig-rep-${REP}-${SIM_SETTINGS}-JC-JC.tre"
+iqtree -v -s *.aln -T 4 -m JC --prefix $IQ_PREFIX
+rm *ckp.gz *.iqtree *.bionj *.mldist
+cp *.tree $ORIG_PREFIX
+cp *.treefile "${IQ_PREFIX}.tre"
+
