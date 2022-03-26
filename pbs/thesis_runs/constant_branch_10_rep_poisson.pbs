@@ -1,0 +1,39 @@
+#PBS -l select=1:ncpus=4:mem=2gb
+#PBS -l walltime=24:00:00
+#PBS -J 1-9
+
+set -e
+module load anaconda3/personal
+
+source activate bioperl
+
+cd ~/../ephemeral/gubbins_testing/simul_data/poisson_data
+
+
+RECCERS=$(head -n $PBS_ARRAY_INDEX ~/gubbins_testing/gubbins_sim/data/poisson_rec.txt | tail -n 1)
+
+#if [ $RECCERS == "0.1" ]
+#then
+#	echo "wassssssssup"
+#else
+
+for REP in {1..10}
+do
+cd "rep_${REP}_data"
+## Get the simulation done
+bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_JC.sh 0.1 $RECCERS \
+~/gubbins_testing/simul_data/strep_53_uc.aln \
+~/gubbins_testing/simul_data/26_phage.mfa 
+## Make the IQtree
+SIM_PREFIX="sim-branch-0.1-rec-${RECCERS}"
+cd $SIM_PREFIX
+IQ_PREFIX="raw-raw-raw-${REP}-${SIM_PREFIX}-JC-JC"
+ORIG_PREFIX="orig-orig-orig-rep-${REP}-${SIM_PREFIX}-JC-JC.tre"
+iqtree -v -s *.aln -T 4 -m JC --prefix $IQ_PREFIX
+rm *ckp.gz *.iqtree *.bionj *.mldist
+cp *.tree $ORIG_PREFIX
+cp *.treefile "${IQ_PREFIX}.tre"
+cd ../../
+
+done
+
