@@ -10,6 +10,7 @@ require(ggpubr)
 require(data.table)
 require(treespace)
 require(viridis)
+require(tictoc)
 
 ###############################################################################
 ## Functions ##################################################################
@@ -261,7 +262,7 @@ data_cleaner <- function(gubbins_gff, gubbins_branch_base_csv, gubbins_tree_file
                          simul_summary_file, simul_tree_file){
   ## Function to load up the neccessary data to check for the Gubbins
   ## SNPs predictions 
-  #browser()
+  browser()
   gubbins_reccy_gff <- delim_reader(gubbins_gff)
   gubbins_reccy_csv <- recombination_gff_cleaner(gubbins_reccy_gff)
   
@@ -312,11 +313,53 @@ data_cleaner <- function(gubbins_gff, gubbins_branch_base_csv, gubbins_tree_file
   
 }
 
+simul_apply_func <- function(row, gubbins_snps, taxa_step){
+  #browser()
+  tic(msg = "This long for one apply run")
+  sim_gubbins <- "No"
+  snp_diff <- -1
+  gubbins_sim <- "No"
+  gubbins_index <- 0
+  if(taxa_step == "taxa"){
+    gubbins_taxa_division <- gubbins_snps[gubbins_snps$Taxa == row[5],]
+  }else{
+    gubbins_taxa_division <- gubbins_snps[gubbins_snps$end_node_index == as.numeric(row[6]),]
+  }
+  if(nrow(gubbins_taxa_division) > 0){
+    ## Now check for position of the SNP, allow for a SNP diff of +- 5bp
+    gubbins_taxa_pos_division <- gubbins_taxa_division %>%
+      filter((base_number >= (as.numeric(row[3]) - 5)) & (base_number <= (as.numeric(row[3]) + 5)))
+    if(nrow(gubbins_taxa_pos_division) > 0){
+      if(nrow(gubbins_taxa_pos_division) > 1){
+        diff_vals <- abs(as.numeric(row[3]) - gubbins_taxa_pos_division$base_number)
+        closest <- which.min(diff_vals)
+        gubbins_recon <- gubbins_taxa_pos_division[closest,]
+        sim_gubbins <- "Yes"
+        snp_diff <- as.numeric(row[3]) - gubbins_recon$base_number
+        gubbins_sim <-  "Yes"
+        gubbins_index <- gubbins_recon$index
+      }else{
+        gubbins_recon <- gubbins_taxa_pos_division
+        sim_gubbins <- "Yes"
+        snp_diff <- as.numeric(row[3]) - gubbins_recon$base_number
+        gubbins_sim <- "Yes" 
+        gubbins_index <- gubbins_recon$index
+      }
+    }
+    
+  }
+  toc()
+  return(paste(sim_gubbins, as.character(snp_diff), gubbins_sim, as.character(gubbins_index), sep = "~"))
+  
+}
+
+
+
 simul_looper <- function(gubbins_snps, simul_snps, taxa_step = "taxa",
                          snps = NULL, rec_rate, branch_rate){
   ## Function to loop through the simul snps testing if the taxa identified are the 
   ## same as the simul, if so see if the gubbins matches a snp here. 
-  #browser()
+#  browser()
   if(is.null(snps)){
     gubbins_snps <- gubbins_snps %>% 
       mutate(simul = "No") %>%
@@ -347,6 +390,7 @@ simul_looper <- function(gubbins_snps, simul_snps, taxa_step = "taxa",
   
   for(k in 1:nrow(simul_snps)){
     nchar_k <- nchar(k)
+    tic(msg = "Took this long for the loop")
     nchar_0 <- num_zeros - nchar_k
     cat("\r", "Completed ", rep(0, nchar_0), k, " of ", num_rows, " SNPs", sep = "")
     current_simul <- simul_snps[k,]
@@ -379,6 +423,7 @@ simul_looper <- function(gubbins_snps, simul_snps, taxa_step = "taxa",
       }
       
     }
+    toc()
   }
   
   
@@ -418,24 +463,90 @@ simul_looper <- function(gubbins_snps, simul_snps, taxa_step = "taxa",
   
 }
 
+simul_looper_apply <- function(gubbins_snps, simul_snps, taxa_step = "taxa",
+                         snps = NULL, rec_rate, branch_rate){
+  ## Function to loop through the simul snps testing if the taxa identified are the 
+  ## same as the simul, if so see if the gubbins matches a snp here. 
+
+  if(is.null(snps)){
+    gubbins_snps <- gubbins_snps %>% 
+      mutate(simul = "No") %>%
+      mutate(taxa_depth = (str_count(Taxa, pattern = ",") + 1))
+    simul_snps <- simul_snps %>%
+      mutate(taxa_depth = (str_count(Taxa, pattern = ",") + 1))
+    
+  }else{
+    gubbins_snps <- gubbins_snps %>% 
+      filter(Type == snps) %>%
+      mutate(index = row_number()) %>%
+      mutate(taxa_depth = (str_count(Taxa, pattern = ",") + 1))
+    simul_snps <- simul_snps %>%
+      filter(Type == snps) %>%
+      mutate(taxa_depth = (str_count(Taxa, pattern = ",") + 1))
+  }
+  cat("\n")
+  tic(msg = "Time for apply runs")
+  tot_res <- apply(X = simul_snps, MARGIN = 1, FUN = simul_apply_func, 
+                   gubbins_snps = gubbins_snps,
+                   taxa_step = taxa_step)
+  toc()
+  matty_res <- data.frame(matrix(unlist(strsplit(tot_res,split = "~")), ncol = 4, byrow = TRUE)) %>%
+    rename(gubbins = 1, snp_diff = 2, simul = 3, index = 4) %>%
+    mutate(snp_diff = as.numeric(snp_diff),
+           index = as.numeric(index))
+  simul_snps <- simul_snps %>%
+    mutate(gubbins = matty_res$gubbins[row_number()],
+           snp_diff = matty_res$snp_diff[row_number()])
+  gubbins_snps <- gubbins_snps %>% 
+    left_join(matty_res %>% select(snp_diff, simul, index), by = c("index" = "index")) %>%
+    mutate(simul = ifelse(is.na(simul), "No", simul))
+  
+  
+  ## Calculate PPV as true pos by gubbins over true pos by gubbins and false pos by gubbins
+  true_pos <- nrow(gubbins_snps %>% filter(simul == "Yes"))
+  false_pos <- nrow(gubbins_snps %>% filter(simul == "No"))
+  gubbins_ppv <- round((true_pos / (true_pos + false_pos)) * 100,digits = 3)
+  
+  ## Calcultate Sensitivity from simul dataset, gubbins annotated over total snps
+  simul_pos <- nrow(simul_snps %>% filter(gubbins == "Yes"))
+  gubbins_sen <- round((simul_pos / nrow(simul_snps)) * 100, digits = 3)
+  cat("\n")  
+  cat(paste("Gubbins PPV = ", as.character(gubbins_ppv), "%", sep = ""), "\n")
+  cat(paste("Gubbins sensitivity = ", as.character(gubbins_sen), "%", sep = ""), "\n")
+  dist_plot <- ggplot(data = simul_snps %>%
+                        mutate(x_col = "Simulated")) + geom_jitter(aes(x = x_col, y = taxa_depth, colour = gubbins)) +
+    labs(x = "", y = "Number of descendant tips from Node", colour = "Reconstructed by Gubbins")
+  ppv_plot <- ggplot(data = gubbins_snps %>%
+                       mutate(x_col = "Gubbins")) + geom_jitter(aes(x = x_col, y = taxa_depth, colour = simul)) +
+    labs(x = "", y = "Number of descendant tips from Node", colour = "Within simulated data")
+  
+  ## Create summary df
+  summary_dataset <- as.data.frame(matrix(nrow = 1, ncol = 5))
+  colnames(summary_dataset) <- c("ppv","sensitivity","rec_rate","branch_rate","rec-branch")
+  summary_dataset[1,1] <- gubbins_ppv
+  summary_dataset[1,2] <- gubbins_sen
+  summary_dataset[1,3] <- rec_rate
+  summary_dataset[1,4] <- branch_rate
+  summary_dataset[1,5] <- paste(as.character(rec_rate), as.character(branch_rate), sep = "-")
+  
+  
+  
+  return(list(simul_df = simul_snps, gubbins_snps = gubbins_snps,
+              sens_plot = dist_plot, ppv_plot = ppv_plot,
+              summary = summary_dataset))
+  
+}
+
+
 ###############################################################################
 ## Load up the Gubbins recombinations data ####################################
 ###############################################################################
 
-classic_snps <- typing_gubbins_rec(gubbins_reccy_csv, gubbins_branch_base)
-updated_snps <- typing_gubbins_rec_apply(gubbins_reccy_csv, gubbins_branch_base)
-
-dplyr::count(classic_snps, Type)
-dplyr::count(updated_snps, Type)
-
-tot_snps <- classic_snps %>% rename(type_c = Type) %>%
-  left_join(updated_snps %>% rename(type_u = Type)) %>%
-  mutate(mismatch = ifelse(type_c == type_u, "No","Yes"))
-
-head(tot_snps[tot_snps$mismatch == "Yes",])
-
-gubbins_reccy_csv %>% filter(start_node == "Node_1") %>%
-  filter(end_node == "taxon_1")
+gubbins_reccy_gff <- delim_reader("fasttree-iqtree-joint-sim-branch-0.1-rec-0.1.recombination_predictions.gff")
+gubbins_reccy_csv <- recombination_gff_cleaner(gubbins_reccy_gff)
+gubbins_branch_base <- read.csv("fasttree-iqtree-joint-sim-branch-0.1-rec-0.1.embl.csv.csv",
+                                stringsAsFactors = FALSE)
+#gubbins_tree <- read.tree(file = gubbins_tree_file)
 
 
 ## Lets run this on the fasttree-iqtree-joint rec 0.1 branch 0.1 dataset initially
@@ -483,8 +594,11 @@ dev.off()
 
 
 
-test_out <- simul_looper(snp_data$gubbins_snps, snp_data$simul_snps, taxa_step = "index",
-                         branch_rate = 0.1, rec_rate = 0.1, snps = "S")
+system.time(test_out <- simul_looper(snp_data_jar$gubbins_snps, snp_data_jar$simul_snps, taxa_step = "index",
+                         branch_rate = 0.1, rec_rate = 0.1, snps = "r"))
+system.time(test_out_apply <- simul_looper_apply(snp_data_jar$gubbins_snps, snp_data_jar$simul_snps, taxa_step = "index",
+                         branch_rate = 0.1, rec_rate = 0.1, snps = "r"))
+
 test_out$sens_plot
 test_out$ppv_plot
 
