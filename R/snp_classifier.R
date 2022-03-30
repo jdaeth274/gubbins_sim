@@ -173,7 +173,13 @@ main_func <- function(){
 
   clade_gff <- delim_reader(input_args$reccy_gff)
   if(is.null(clade_gff)){
-    file.create(input_args$out)
+    ## We'll still recreate the snps, we'll just set everything to be S!
+    mutty_recon <- read.csv(input_args$branch_base,
+                            stringsAsFactors = FALSE)
+    classified_snps <- mutty_recon %>% mutate(index = row_number()) %>%
+      mutate(Type = "S")
+    
+    
   }else{
     clade_csv <- recombination_gff_cleaner(clade_gff)
   
@@ -185,11 +191,12 @@ main_func <- function(){
     }else{
       system.time(classified_snps <- typing_gubbins_rec_apply(clade_csv, mutty_recon))
     }
+  }
     write.csv(classified_snps,
               file = input_args$out,
               row.names = FALSE,
               quote = FALSE)  
-  }
+  
 }
 
 ###############################################################################
