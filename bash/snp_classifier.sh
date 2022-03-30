@@ -2,10 +2,10 @@
 
 set -e 
 
-if [ $# -ne 4 ]
+if [ $# -lt 4 ]
 then
 printf "This script needs four arguments not %s : \n" $#
-echo "bash snp_classifier.sh <embl_dir> <gff_dir> <threads> <snp_classifier.R location>"
+echo "bash snp_classifier.sh <embl_dir> <gff_dir> <threads> <snp_classifier.R location> (OPTIONAL)<EMBL PREFIX LINE>"
 echo "Both the directories should be just the embl_csv.csv files and the .gffs respectively"
 echo ""
 
@@ -15,6 +15,7 @@ EMBL_DIR=$1
 GFF_DIR=$2
 THREADS=$3
 SCRIPT_LOC=$4
+#EMBL_PREFIX=$5
 START=$SECONDS
 ls -d "${EMBL_DIR}/"*.embl_csv.csv > embl_lists.txt
 COUNTER=1
@@ -39,7 +40,7 @@ function my_func {
 export -f my_func
 #parset line,GFF_DIR,SCRIPT_LOC,COUNTER 
 START=$SECONDS
-parallel -j $THREADS my_func ::: "${EMBL_DIR}/"*.embl_csv.csv ::: $GFF_DIR ::: $SCRIPT_LOC ::: $COUNTER
+parallel -j $THREADS my_func ::: "${EMBL_DIR}/"*-rec-0.0*.embl_csv.csv ::: $GFF_DIR ::: $SCRIPT_LOC ::: $COUNTER
 
 END=$(( SECONDS - START ))
 printf "\n"
