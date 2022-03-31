@@ -29,7 +29,7 @@ get_input <- function(){
                       dest='summary_dir')
   parser$add_argument('--threads', type="integer", default = 1,
                       help='Number of threads to use for calculations',
-                      dest='summary_dir')
+                      dest='threads')
   parser$add_argument('--snps', type = "character", default = NULL,
                       help = "Whether to type snps by recombination type, default is null, put any word to reconstruct separately (should change this to boolean)",
                       dest = "snps")
@@ -724,7 +724,6 @@ main_ppv_function <- function(sim_summaries, gubbins_snps, tree_files, threads =
   clusterExport(cluster_function, "simul_looper_dplyr")
   clusterEvalQ(cluster_function, library(dplyr))
   clusterEvalQ(cluster_function, library(ape))
-  clusterEvalQ(cluster_function, library(treespace))
   clusterEvalQ(cluster_function, library(stringr))
   # Now lets run the results 
   cat(sprintf("Running on the parrallel cores: "))
@@ -748,6 +747,7 @@ main_ppv_function <- function(sim_summaries, gubbins_snps, tree_files, threads =
 main_func <- function(){
   start_time <- Sys.time()
   input_data <- get_input()
+  print(input_data$summary_dir)
   sim_summaries <- list.files(input_data$summary_dir,
                               full.names = TRUE, pattern = "*\\.summary")
   
