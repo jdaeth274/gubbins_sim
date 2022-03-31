@@ -149,7 +149,7 @@ append_ancestors <- function(gub_tree, branch_base){
     }else{
 
       start_node <- which(tot_nodes == current_snp$end_node)
-      tips <- tip_nodes(gub_tree, start_node)
+      tips <- sort(tip_nodes(gub_tree, start_node))
       tips_format <- paste(tips, collapse = ",")
       branch_base[k,"Taxa"] <- sub("taxon_","",tips_format)
     }
@@ -200,6 +200,7 @@ simul_node_finder <- function(simul_tree, simul_data){
       simul_data$end_node_index[k] <- which(tot_nodes == paste("taxon_",taxa_num, sep = ""))
       
     }else{
+
       taxa_list <- str_split_fixed(current_snp$Taxa, pattern = ",", n = num_taxa + 1)[1,]
       taxa_names <- paste("taxon_",taxa_list, sep = "")
       tip_indexes <- which(tot_nodes %in% taxa_names)
@@ -216,7 +217,9 @@ node_dictionary <- function(gubbins_tree, simul_tree){
   ## Function to create a mapping of the gubbins nodes over to the 
   ## simul nodes in the tree, trees here have to be identical in 
   ## topology of nodes 
-  #browser()
+  browser()
+  if(is.null(gubbins_tree$node.label))
+    gubbins_tree <- makeNodeLabel(gubbins_tree)
   gubbins_nodes_df <- as.data.frame(matrix(nrow = Nnode(gubbins_tree) + Ntip(gubbins_tree), ncol = 3))
   colnames(gubbins_nodes_df) <- c("node_name_gubb","node_index_gubb","taxa")
   gubbins_nodes_df$node_name_gubb <- c(gubbins_tree$tip.label,gubbins_tree$node.label)
@@ -262,7 +265,7 @@ data_cleaner <- function(gubbins_gff, gubbins_branch_base_csv, gubbins_tree_file
                          simul_summary_file, simul_tree_file){
   ## Function to load up the neccessary data to check for the Gubbins
   ## SNPs predictions 
-  browser()
+  
   gubbins_reccy_gff <- delim_reader(gubbins_gff)
   gubbins_reccy_csv <- recombination_gff_cleaner(gubbins_reccy_gff)
   
@@ -296,12 +299,14 @@ data_cleaner <- function(gubbins_gff, gubbins_branch_base_csv, gubbins_tree_file
   
   node_diccers <- node_dictionary(gubbins_tree, simul_tree)
   
+  
+  ## Drop any branches that don't correspond to the sim tree 
   branch_base_typed_taxa_simmed <- branch_base_typed_taxa %>%
     left_join(node_diccers %>% select(node_index_gubb, node_index_simul),
               by = c("end_node_index" = "node_index_gubb")) %>%
     select(-end_node_index) %>%
     rename(end_node_index = node_index_simul) %>%
-    as.data.frame()
+    as.data.frame() 
   
   
   simul_clonal_snps <- simul_data_nodes #%>% filter(Type == "S")
@@ -359,7 +364,7 @@ simul_looper <- function(gubbins_snps, simul_snps, taxa_step = "taxa",
                          snps = NULL, rec_rate, branch_rate){
   ## Function to loop through the simul snps testing if the taxa identified are the 
   ## same as the simul, if so see if the gubbins matches a snp here. 
-#  browser()
+
   if(is.null(snps)){
     gubbins_snps <- gubbins_snps %>% 
       mutate(simul = "No") %>%
@@ -641,6 +646,69 @@ example_depth <- simul_res %>% filter(taxa_depth > 5) %>% head()
 ## Lets look into an example of the taxa two isolates 
 
 
+gubb_test <- snp_data_jar$gubbins_snps %>%
+  filter(Type == "r") %>%
+  mutate(simul = "No") %>%
+  mutate(index = row_number()) %>%
+  mutate(snp_diff = NaN) %>%
+  mutate(taxa_depth = (str_count(Taxa, pattern = ",") + 1))
+simul_snps <- snp_data_jar$simul_snps %>%
+  mutate(snp_index = row_number()) %>%
+  filter(Type == "r") %>%
+  mutate(gubbins = "No") %>%
+  mutate(snp_diff = NaN) %>%
+  mutate(taxa_depth = (str_count(Taxa, pattern = ",") + 1))
+
+test_full_join <- simul_snps %>%
+  # Crossing
+  full_join(gubb_test, by = c("end_node_index")) %>%
+  # Filter
+  filter(base_number >= Start - 5,
+         base_number <= Start + 5) %>%
+  rename(Type = 2, Taxa = 5) %>%
+  mutate(testy = "yes") %>%
+  mutate(match_difference = Start - base_number) %>% arrange(snp_index, index) %>%
+  filter(duplicated(index) == FALSE) %>% 
+  arrange(snp_index, match_difference) %>% filter(duplicated(snp_index) == FALSE)
+  
+length(unique(test_full_join$index))
+length(unique(test_full_join$snp_index))
+
+test_full_join %>% dplyr::count(snp_index) %>% arrange(desc(n)) %>% head()
+test_full_join[test_full_join$snp_index == 254,]
+
+test_arr <- test_full_join %>% arrange(snp_index, index) %>%
+  filter(duplicated(index) == FALSE) %>% 
+  arrange(snp_index, match_difference) %>% filter(duplicated(snp_index) == FALSE)
+
+
+gubbins_snps <- gubb_test %>%
+  mutate(simul = ifelse(index %in% test_full_join$))
+
+dplyr::count(test_full_join, index) %>% arrange(desc(n)) %>% head()
+actual_simul <- test_out$simul_df %>%
+  mutate(simmer = "yes")
+
+test_full_join_test <- test_full_join %>%
+  left_join(actual_simul, by = c("Event.", "Type", "Start","End", "Taxa", "end_node_index"))
+
+simul_test <- actual_simul %>%
+  left_join(test_full_join, by = c("Event.", "Type", "Start","End", "Taxa", "end_node_index"))
+
+dim(distinct(test_full_join))
+
+
+gubb_test <- gubb_test %>%
+  mutate(simul = ifelse(index %in% test_full_join$index, "Yes", "No"))
 
 
 
+
+setDT(simul_snps)
+setDT(gubb_test)[, `:=` (base_start = base_number - 5, base_end = base_number + 5)]
+
+test_snps <- simul_snps[gubb_test, 
+           .(Event., Type, Start, End, Taxa, end_node_index, gubbins, snp_diff, taxa_depth),
+           on = .(end_node_index,
+                  Start >= base_start,
+                  Start <= base_end)]
