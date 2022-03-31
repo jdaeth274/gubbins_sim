@@ -28,7 +28,7 @@ cd ~/../ephemeral/gubbins_testing/poisson_runs
 ## Get the run models 
 BASIO=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/poisson_datasets.txt | tail -n 1)
 
-SIMUL_LOC ="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/poisson_data/"
+SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/poisson_data/"
 FIRST_TREE="clonalframeML"
 MAIN_TREE="clonalframeML"
 MAR="clonalframeML"
@@ -75,7 +75,5 @@ do
 	echo "Took this long for $MAIN_MODEL run, $END_GUB" > "../${MAIN_MODEL}_time.txt"
 	echo "Used this processor for the runs: $PROC" >> "../${MAIN_MODEL}_time.txt"
 	cd ../../../
-	
+done	
 echo "Finished the runs for this model -  ${MAIN_MODEL}-${BASIO}-${PBS_ARRAY_INDEX}" >> "./models_finished_branch.txt"
-sed -i "s/${MODEL}//g" ./models_failed_branch.txt
-sed -i '/^[[:space:]]*$/d' ./models_failed_branch.txt
