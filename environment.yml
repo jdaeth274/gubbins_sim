@@ -1,4 +1,4 @@
-name: gubbins_testing
+name: gubbins_sim
 channels:
   - conda-forge
   - bioconda
@@ -18,3 +18,8 @@ dependencies:
   - dendropy
   - numpy
   - psutil
+  - perl-bioperl
+  - perl-math-random
+  - r-ape
+  - r-devtools
+  - r-snow

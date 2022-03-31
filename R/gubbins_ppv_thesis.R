@@ -2,15 +2,15 @@
 ## Thesis runs through on the PPV and gubbins sensitivity for the repped data #
 ###############################################################################
 
-require(dplyr)
-require(stringr)
-require(ape)
-require(data.table)
-require(devtools)
+require(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+require(stringr, quietly = TRUE, warn.conflicts = FALSE)
+require(ape, quietly = TRUE, warn.conflicts = FALSE)
+require(data.table, quietly = TRUE, warn.conflicts = FALSE)
+require(devtools, quietly = TRUE, warn.conflicts = FALSE)
 if(!("treespace" %in% rownames(installed.packages())))
   devtools::install_github("thibautjombart/treespace")
-require(treespace)
-require(snow)
+require(treespace, quietly = TRUE, warn.conflicts = FALSE)
+require(snow, quietly = TRUE, warn.conflicts = FALSE)
 
 ###############################################################################
 ## Functions ##################################################################
