@@ -7,10 +7,11 @@ require(stringr, quietly = TRUE, warn.conflicts = FALSE)
 require(ape, quietly = TRUE, warn.conflicts = FALSE)
 require(data.table, quietly = TRUE, warn.conflicts = FALSE)
 require(devtools, quietly = TRUE, warn.conflicts = FALSE)
-if(!("treespace" %in% rownames(installed.packages())))
-  devtools::install_github("thibautjombart/treespace")
-require(treespace, quietly = TRUE, warn.conflicts = FALSE)
+# if(!("treespace" %in% rownames(installed.packages())))
+#   devtools::install_github("thibautjombart/treespace")
+# require(treespace, quietly = TRUE, warn.conflicts = FALSE)
 require(snow, quietly = TRUE, warn.conflicts = FALSE)
+require(argparse, quietly = TRUE, warn.conflicts = FALSE)
 
 ###############################################################################
 ## Functions ##################################################################
@@ -189,13 +190,13 @@ data_cleaner <- function(gubbins_snps, gubbins_tree_file,
   
   simul_data_nodes <- simul_node_finder(simul_tree = simul_tree,
                                         simul_data = simul_summary)
-  
-  tree_distances <- treeDist(gubbins_tree, simul_tree, lambda = 0)
-  
-  if(tree_distances != 0){
-    print("Warning the Tree topologies are not identical, SNP predictions will not 
-          work properly")
-  }
+  # treespace install very tricky on the cluster  
+  # tree_distances <- treeDist(gubbins_tree, simul_tree, lambda = 0)
+  # 
+  # if(tree_distances != 0){
+  #   print("Warning the Tree topologies are not identical, SNP predictions will not 
+  #         work properly")
+  # }
   ## Convert the gubbins node_indexes to match the simul data 
   
   node_diccers <- node_dictionary(gubbins_tree, simul_tree)
