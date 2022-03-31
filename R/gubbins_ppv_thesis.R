@@ -769,7 +769,11 @@ main_func <- function(){
   
 }
 
+###############################################################################
+## Main run ###################################################################
+###############################################################################
 
+main_func()
 # sim_summaries <- list.files("~/Dropbox/phd/gubbins_testing/theses_analyses/sim_summaries_jc/",
 #                             full.names = TRUE, pattern = "*\\.summary")
 # 
