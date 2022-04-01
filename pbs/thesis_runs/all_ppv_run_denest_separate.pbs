@@ -1,0 +1,17 @@
+#PBS -l select=1:ncpus=32:mem=32gb
+#PBS -l walltime=24:00:00
+
+set -e 
+module load anaconda3/personal
+
+source activate gubbins_sim
+
+cd ~/gubbins_testing
+
+## Run the gubbins_ppv 
+START=$SECONDS
+Rscript --vanilla ./gubbins_sim/R/gubbins_ppv_thesis.R --embl-dir ./jc_rep_10_snps/ \
+--tree-dir ./jc_rep_10_trees/ --summary-dir ./de-nested-summaries/ --threads 32 \
+--out poisson_runs_all_snps_ppv_denested_separate.csv --snps yes
+END=$(( SECONDS - START ))
+printf "Took this long to run %s (S) \n" $END 
