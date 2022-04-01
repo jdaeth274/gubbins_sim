@@ -19,7 +19,7 @@ then
 	exit 1
 fi
 
-dir="sim-branch-${BRANCH_RATE}-rec-${REC_RATE}"
+dir="sim-branch-${BRANCH_RATE}-rec-${REC_RATE}-length-${NUM_SEQS}"
 if [ -d $dir ]
 then
 	rm -r $dir
