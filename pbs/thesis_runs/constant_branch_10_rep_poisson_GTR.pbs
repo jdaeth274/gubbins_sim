@@ -27,12 +27,17 @@ bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_GTR.sh 0.1 $RECCERS
 ## Make the IQtree
 SIM_PREFIX="sim-branch-0.1-rec-${RECCERS}"
 cd $SIM_PREFIX
-IQ_PREFIX="raw-raw-raw-rep-${REP}-${SIM_PREFIX}-JC-JC"
-ORIG_PREFIX="orig-orig-orig-rep-${REP}-${SIM_PREFIX}-JC-JC.tre"
+IQ_PREFIX="raw-raw-raw-rep-${REP}-${SIM_PREFIX}-GTR-JC"
+IQ_PREFIX_GTR="raw-raw-raw-rep-${REP}-${SIM_PREFIX}-GTR-GTR"
+ORIG_PREFIX="orig-orig-orig-rep-${REP}-${SIM_PREFIX}-GTR-GTR.tre"
 iqtree -v -s *.aln -T 4 -m JC --prefix $IQ_PREFIX
 rm *ckp.gz *.iqtree *.bionj *.mldist
 cp *.tree $ORIG_PREFIX
 cp *.treefile "${IQ_PREFIX}.tre"
+iqtree -v -s *.aln -T 4 -m GTR --prefix $IQ_PREFIX_GTR
+rm *ckp.gz *.iqtree *.bionj *.mldist
+cp "${IQ_PREFIX_GTR}.treefile" "${IQ_PREFIX_GTR}.tre"
+
 cd ../../
 
 done
