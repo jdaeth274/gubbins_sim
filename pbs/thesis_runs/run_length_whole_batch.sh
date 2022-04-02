@@ -14,8 +14,8 @@ cd ~/../ephemeral/gubbins_testing/length_runs
 MODEL=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/model_rep.txt | tail -n 1)
 
 SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/length_tests/"
-REP=$( echo $MODEL | awk -F "-" '{print $4"_"$5}')
-REP_DASH=$( echo $MODEL | awk -F "-" '{print $4"-"$5}')
+REP=$( echo $MODEL | awk -F "-" '{print $4"_"$5"}')
+REP_DASH=$( echo $MODEL | awk -F "-" '{print $4"-"$5"}'
 FIRST_TREE=$( echo $MODEL | awk -F "-" '{print $1}')
 MAIN_TREE=$( echo $MODEL | awk -F "-" '{print $2}')
 MAR=$( echo $MODEL | awk -F "-" '{print $3}')
@@ -49,7 +49,7 @@ do
 
 	cp $ALNFILE ./
     TIME_PREFIX="${MAIN_MODEL}-${REP_DASH}-seq-${line}"
-	echo $PWD
+
 	if [ $MAR == "mar" ]
 	then
 
@@ -78,7 +78,6 @@ do
 		echo "Used this processor for the runs: $PROC" >> "../${MAIN_MODEL}_time.txt"
 		cd ../../../
 	fi
-	
 done
 
 echo "Finished the runs for this model -  ${MODEL}-${PBS_ARRAY_INDEX}" >> "./models_finished_branch.txt"

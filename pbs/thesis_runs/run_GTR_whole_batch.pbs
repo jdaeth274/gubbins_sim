@@ -70,7 +70,7 @@ do
             /usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix "${MAIN_MODEL}-rep-${K}-${BASIO}-GTR-${TREE_MODEL}" \
             --use-time-stamp --threads 1 --verbose \
             --tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE --mar \
-            --model GTR "${BASIO}.aln" > gubbins_log 2>&1 
+            --model GTRGAMMA "${BASIO}.aln" > gubbins_log 2>&1 
             END_GUB=$(( SECONDS - START_GUB ))
             PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
             echo "Took this long for $MAIN_MODEL run, $END_GUB" > "../${MODEL_RECON}_time.txt"
@@ -100,7 +100,7 @@ do
             /usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix "${MAIN_MODEL}-rep-${K}-${BASIO}-GTR-${TREE_MODEL}" \
             --use-time-stamp --threads 1 --verbose \
             --tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE \
-            --model JC "${BASIO}.aln" > gubbins_log 2>&1
+            --model GTRGAMMA "${BASIO}.aln" > gubbins_log 2>&1
             END_GUB=$(( SECONDS - START_GUB ))
             rm *.aln
             PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
