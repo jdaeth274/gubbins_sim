@@ -13,14 +13,13 @@ cd ~/../ephemeral/gubbins_testing/GTR_runs
 ## Get the run models 
 MODEL=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/gtr_run_data.txt | tail -n 1)
 
-SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/poisson_data/GTR_data"
+SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/poisson_data/GTR_data/"
 BASIO=$( echo $MODEL | awk -F "-" '{print $1"-"$2"-"$3"-"$4"-"$5}')
 FIRST_TREE=$( echo $MODEL | awk -F "-" '{print $6}')
 MAIN_TREE=$( echo $MODEL | awk -F "-" '{print $7}')
 MAR=$( echo $MODEL | awk -F "-" '{print $8}')
 TREE_MODEL=$( echo $MODEL | awk -F "-" '{print $9}')
 MAIN_MODEL="${FIRST_TREE}-${MAIN_TREE}-${MAR}"
-ALNFILE="${SIMUL_LOC}${BASIO}/${BASIO}.aln"
 ##Conditional statement for the reconstructions 
 for K in {1..10}
 do
