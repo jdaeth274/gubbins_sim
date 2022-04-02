@@ -82,7 +82,7 @@ do
         fi
 
 	else
-        if[ $TREE_MODEL == "JC" ]
+        if [ $TREE_MODEL == "JC" ]
         then
             START_GUB=$SECONDS
             /usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix "${MAIN_MODEL}-rep-${K}-${BASIO}-GTR-${TREE_MODEL}" \
