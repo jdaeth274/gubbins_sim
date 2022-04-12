@@ -25,7 +25,7 @@ while read line <&3
 do
 	cd "${REP}_runs"
     BASIO="sim-branch-0.1-rec-0.5-length-${line}"
-	ALNFILE="${SIMUL_LOC}${REP}_data/${BASIO}/${BASIO}.aln"
+	ALNFILE="${SIMUL_LOC}${REP}_data/${BASIO}/${BASIO}-exact.aln"
 	if [ -d $BASIO ]
 	then
 		cd $BASIO
