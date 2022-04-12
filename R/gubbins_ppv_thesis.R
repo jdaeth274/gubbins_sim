@@ -264,14 +264,16 @@ simul_looper_dplyr <- function(gubbins_snps, simul_snps, taxa_step = "taxa",
                          first_mod, main_mod, recon){
   ## Function to loop through the simul snps testing if the taxa identified are the 
   ## same as the simul, if so see if the gubbins matches a snp here. 
-
+  
   if(is.null(snps)){
-    gubbins_snps <- gubbins_snps %>% 
+    gubbins_snps <- gubbins_snps %>%
+      filter(Type != "R") %>%
       mutate(simul = "No") %>%
       mutate(index = row_number()) %>%
       mutate(snp_diff = 0) %>%
       mutate(taxa_depth = (str_count(Taxa, pattern = ",") + 1))
     simul_snps <- simul_snps %>%
+      filter(Type != "R") %>%
       mutate(snp_index = row_number()) %>%
       mutate(gubbins = "No") %>%
       mutate(snp_diff = 0) %>%
@@ -686,9 +688,9 @@ main_ppv_function <- function(sim_summaries, gubbins_snps, tree_files, threads =
   ## Set up clustersim_df
   # browser()
   # test_dataset <- sim_apply_function(c(5,6), sim_df = sim_df,
-  #                  gubbins_df = gubbins_df, 
-  #                    tree_df = tree_df,
-  #                  snp_type = snp_type)
+  #                 gubbins_df = gubbins_df, 
+  #                 tree_df = tree_df,
+  #                 snp_type = snp_type)
   newEnv <- new.env()
   
   # Assigning variables
@@ -775,17 +777,17 @@ main_func <- function(){
 
 main_func()
 # sim_summaries <- list.files("~/Dropbox/phd/gubbins_testing/theses_analyses/sim_summaries_jc/",
-#                             full.names = TRUE, pattern = "*\\.summary")
+#                            full.names = TRUE, pattern = "*\\.summary")
 # 
 # gubb_snps <- list.files("~/Dropbox/phd/gubbins_testing/theses_analyses/jc_rep_10_snps/",
-#                             full.names = TRUE, pattern = "*\\.csv")
-# 
+#                          full.names = TRUE, pattern = "*\\.csv")
+#  
 # tree_df <- list.files("~/Dropbox/phd/gubbins_testing/theses_analyses/jc_rep_10_trees/",
-#                         full.names = TRUE, pattern = "*\\.tre")
+#                          full.names = TRUE, pattern = "*\\.tre")
 # test_full <- main_ppv_function(sim_summaries, gubb_snps, tree_df, threads = 8, snp_type = NULL)
-# 
+#  
 # out_data <- main_ppv_function(sim_summaries, gubb_snps, tree_df, threads = 8)
-# 
+ 
 # head(out_data)
 # write.csv(out_data, "~/Dropbox/phd/gubbins_testing/theses_analyses/ppv_out_data_dplyr.csv",
 #           row.names = FALSE, quote = FALSE)
