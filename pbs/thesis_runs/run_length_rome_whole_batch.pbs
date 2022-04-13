@@ -56,7 +56,7 @@ do
 		START_GUB=$SECONDS
 		/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix ${TIME_PREFIX} --use-time-stamp --threads 1 --verbose \
 		--tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE --mar \
-		--model JC "${BASIO}.aln" > gubbins_log 2>&1 
+		--model JC "${BASIO}-exact.aln" > gubbins_log 2>&1 
 		END_GUB=$(( SECONDS - START_GUB ))
 		PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
 		echo "Took this long for $TIME_PREFIX run, $END_GUB" > "../${MAIN_MODEL}_time.txt"
@@ -70,7 +70,7 @@ do
 		START_GUB=$SECONDS
 		/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix ${TIME_PREFIX} --use-time-stamp --threads 1 --verbose \
 		--tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE \
-		--model JC "${BASIO}.aln" > gubbins_log 2>&1
+		--model JC "${BASIO}-exact.aln" > gubbins_log 2>&1
 		END_GUB=$(( SECONDS - START_GUB ))
 		rm *.aln
 		PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
