@@ -7,14 +7,13 @@
 #GUBBINS_LOG=$1
 OUT_FILE=$1
 MODEL_FILE=$2
-MODEL_DIR=$3
 MODEL_NUM=1
 
-if [ $# -ne 3 ]
+if [ $# -ne 2 ]
 then
-echo "Need three arguments see usage below:"
+echo "Need two arguments see usage below:"
 echo ""
-echo "bash time_and_mem_get.sh <out_name> <list_of_model_file> <results_dir>"
+echo "bash time_and_mem_get.sh <out_name> <list_of_model_file> "
 echo ""
 exit
 fi
