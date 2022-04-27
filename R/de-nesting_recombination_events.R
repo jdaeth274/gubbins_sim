@@ -270,6 +270,7 @@ main_func <- function(){
   summary_input <- get_input()
   sim_summaries <- list.files(summary_input$summary_dir,
                               full.names = TRUE, pattern = "*\\.summary")
+  print(sim_summaries)
   out_dir <- summary_input$out
   last_char <- substr(out_dir, nchar(out_dir) - 1 + 1, nchar(out_dir))
   if(last_char != "/")
