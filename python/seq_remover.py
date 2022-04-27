@@ -53,7 +53,7 @@ def main():
         for record in alignment:
             name = record.id
             name_grep = "^" + name + "$"
-            res = any([ele in name_grep for ele in tot_ids])
+            res = any([("^" + ele + "$") == name_grep for ele in tot_ids])
             if res:
                 print("Removing sequence: " + name)
             else:
