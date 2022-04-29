@@ -1,0 +1,23 @@
+#PBS -l select=1:ncpus=1:mem=64gb:cpu_type=rome 
+#PBS -l walltime=48:00:00
+
+set -e 
+module load anaconda3/personal
+
+source activate gubbins_git
+
+cd ~/../ephemeral/gubbins_testing/pmen1_runs/ft_rax_jar_64
+
+START_GUB=$SECONDS
+/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix pmen1_ft_rax_jar --use-time-stamp \
+--threads 1 --verbose --tree-builder raxml --first-tree-builder fasttree \
+~/gubbins_testing/pmen1_data/pmen1_421_aln.aln > gubbins_log 2>&1 
+END_GUBBINS=$(( SECONDS - START_GUB ))
+PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
+echo "Took this long for pmen1 ft rax jar run, $END_GUB" > "./pmen1_gubb_time.txt"
+echo "Used this processor for the runs: $PROC" >> "./pmen1_gubb_time.txt"
+python ~/gubbins_testing/gubbins_sim/python/embl_changer.py --embl *branch_base_reconstruction.embl \
+--output "pmen1_ft_rax_jar.embl_csv" --threads 1
+
+
+

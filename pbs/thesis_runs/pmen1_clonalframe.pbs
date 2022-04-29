@@ -1,0 +1,21 @@
+#PBS -l select=1:ncpus=1:mem=64gb:cpu_type=rome
+#PBS -l walltime=48:00:00
+
+set -e 
+module load anaconda3/personal
+
+source activate clonalframe_env
+
+cd ~/../ephemeral/gubbins_testing/pmen1_runs/clonalframe
+
+START_GUB=$SECONDS
+/usr/bin/time -v ClonalFrameML ~/gubbins_testing/pmen1_data/pmen1_iqtree.treefile \
+~/gubbins_testing/pmen1_data/pmen1_421_aln.aln pmen1_clonalframe > gubbins_log 2>&1
+END_GUB=$(( SECONDS - START_GUB ))
+PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
+echo "Took this long for ClonalFrameML run, $END_GUB" > "./clonalFrame_time.txt"
+echo "Used this processor for the runs: $PROC" >> "./clonalFrame_time.txt"
+
+
+
+

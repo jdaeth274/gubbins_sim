@@ -1,0 +1,38 @@
+#PBS -l select=1:ncpus=1:mem=12gb:cpu_type=rome
+#PBS -l walltime=24:00:00
+#PBS -J 1-10
+
+set -e 
+module load anaconda3/personal
+
+source activate gubbins_update_rec
+
+THREADS=$PBS_ARRAY_INDEX
+cd ~/../ephemeral/gubbins_testing/update_rec_runs
+RUN_DIR="fasttree-raxml-joint-rep-${THREADS}-sim-branch-0.1-rec-1.0"
+if [ -d $RUN_DIR ]
+then
+	rm -r $RUN_DIR
+	mkdir $RUN_DIR
+	cd $RUN_DIR
+else
+	mkdir $RUN_DIR
+	cd $RUN_DIR
+fi
+
+START_GUB=$SECONDS
+BASE_ALN="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/poisson_data/rep_${THREADS}_data/sim-branch-0.1-rec-1.0/sim-branch-0.1-rec-1.0.aln"
+cp $BASE_ALN ./ 
+/usr/bin/time -v python ~/gubbins_jit/gubbins/python/run_gubbins.py --prefix "${RUN_DIR}-JC-JC" \
+--use-time-stamp --model JC --first-model JC \
+--threads 1 --verbose --tree-builder raxml --first-tree-builder fasttree \
+./sim-branch-0.1-rec-1.0.aln > gubbins_log 2>&1 
+END_GUBBINS=$(( SECONDS - START_GUB ))
+PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
+echo "Took this long for pmen1 ft rax jar run with $THREADS threads, $END_GUB" > "./pmen1_gubb_time.txt"
+echo "Used this processor for the runs: $PROC" >> "./pmen1_gubb_time.txt"
+python ~/gubbins_testing/gubbins_sim/python/embl_changer.py --embl *branch_base_reconstruction.embl \
+--output "pmen1_rnj_rnj.embl_csv" --threads 1
+
+
+

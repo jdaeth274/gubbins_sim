@@ -1,0 +1,14 @@
+#PBS -l select=1:ncpus=8:mem=16gb
+#PBS -l walltime=24:00:00
+
+set -e
+
+module load anaconda3/personal
+
+source activate clonalframe_env 
+
+cd ~/gubbins_testing/pmen1_data
+
+iqtree -v -s pmen1_421_aln.aln -T 8 -m GTR --prefix pmen1_iqtree
+
+echo "Done"

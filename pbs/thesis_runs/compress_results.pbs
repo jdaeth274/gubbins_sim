@@ -1,0 +1,30 @@
+#PBS -l select=1:ncpus=8:mem=12gb
+#PBS -l walltime=24:00:00
+
+set -e 
+
+cd ~/../ephemeral/gubbins_testing
+
+## tar the GTR runs 
+GTR_START=$SECONDS
+tar -cf - GTR_runs/ | pigz -9 -p 8 > gtr_res.tar.gz 
+GTR_END=$(( SECONDS - GTR_START ))
+## tar the length runs 
+LENGTH_START=$SECONDS
+tar -cf - length_runs/ | pigz -9 -p 8 > length_res.tar.gz 
+LENGTH_END=$(( SECONDS - LENGTH_START ))
+## tar the poisson runs 
+POISSON_START=$SECONDS
+tar -cf - poisson_runs/ | pigz -9 -p 8 > poisson_res.tar.gz
+POISSON_END=$(( SECONDS - POISSON_START ))
+
+printf "Took this long for the GTR tarring %s (S) \n" $GTR_END > tar_results_times.txt
+printf "Took this long for the Length tarring %s (S) \n" $LENGTH_END >> tar_results_times.txt
+printf "Took this long for the poisson tarring %s (S) \n" $POISSON_END >> tar_results_times.txt
+
+echo "DONE"
+
+
+
+
+
