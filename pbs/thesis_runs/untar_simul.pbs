@@ -1,0 +1,13 @@
+#PBS -l select=1:ncpus=1:mem=12gb
+#PBS -l walltime=24:00:00
+
+set -e 
+
+cd ~/../ephemeral/gubbins_testing/untarred_simul 
+
+TAR_START=$SECONDS
+tar -xzvf ~/gubbins_testing/simul_data/simul_data.tar.gz 
+TAR_END=$(( SECONDS - TAR_START ))
+echo "Tar time is ${TAR_END} (s) " > tar_times.txt 
+
+

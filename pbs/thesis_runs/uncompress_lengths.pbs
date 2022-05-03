@@ -1,0 +1,11 @@
+#PBS -l select=1:ncpus=1:mem=12gb
+#PBS -l walltime=24:00:00
+
+set -e 
+
+cd ~/../ephemeral/gubbins_testing/untarred_simul/simul_data
+START_DECOMP=$SECONDS
+tar -xzvf ~/gubbins_testing/simul_data/length_sim_tarred.tar.gz 
+END_DECOMP=$(( SECONDS - START_DECOMP ))
+echo "Took this long for decomp: $END_DECOMP (s) " > decomp_time_length.txt
+
