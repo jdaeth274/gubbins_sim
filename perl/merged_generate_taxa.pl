@@ -480,7 +480,7 @@ print "I'm done on the simulation \n";
 # SUBROUTINES
 
 sub croak {
-    print STDERR "\ngenerate_taxa.pl -a [alignment file] -m [MGE file] -o [output prefix] -n [# taxa (default: 10)] -b [branching prob (default = 0.05)] -r [rec prob (default = 0.1)] -i [insertion prob (default = 0.1)]\n\n";
+    print STDERR "\ngenerate_taxa.pl -a [alignment file] -m [MGE file] -o [output prefix] -n [# taxa (default: 10)] -b [branching prob (default = 0.05)] -r [rec prob (default = 0.1)] -i [insertion prob (default = 0.1)] -s [substitution model (JC|GTR) -l [minimum recombination length]\n\n";
 }
 
 sub copy_event_log {
