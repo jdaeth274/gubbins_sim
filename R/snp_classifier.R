@@ -13,9 +13,11 @@ require(snow, quietly = TRUE, warn.conflicts = FALSE)
 get_input <- function(){
   parser <- ArgumentParser(description='Create classified SNP object')
   parser$add_argument('--reccy-gff', type="character", required = TRUE,
-                      help='recombination predictions in gff format ')
+                      help='recombination predictions in gff format ',
+                      nargs = "+")
   parser$add_argument('--branch-base', dest='branch_base', required = TRUE,
-                      help='embl branch_base file in csv format')
+                      help='embl branch_base file in csv format',
+                      nargs = "+")
   parser$add_argument('--threads', type="integer", default = 1,
                       help='Number of threads to use for the SNP classification',
                       dest='threads')
@@ -171,10 +173,10 @@ main_func <- function(){
   
   input_args <- get_input()
 
-  clade_gff <- delim_reader(input_args$reccy_gff)
+  clade_gff <- delim_reader(input_args$reccy_gff[1])
   if(is.null(clade_gff)){
     ## We'll still recreate the snps, we'll just set everything to be S!
-    mutty_recon <- read.csv(input_args$branch_base,
+    mutty_recon <- read.csv(input_args$branch_base[1],
                             stringsAsFactors = FALSE)
     classified_snps <- mutty_recon %>% mutate(index = row_number()) %>%
       mutate(Type = "S")
