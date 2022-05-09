@@ -28,9 +28,9 @@ cd ~/../ephemeral/gubbins_testing/update_rec_runs
 ## Get the run models 
 MODEL=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/data_tree_models.txt | tail -n 1)
 
-SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/poisson_data/"
+SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/untarred_simul/simul_data/poisson_data/"
 BASIO=$( echo $MODEL | awk -F "-" '{print $1"-"$2"-"$3"-"$4"-"$5}')
-FIRST_TREE=$( echo $MODEL | awk -F "-" '{print $6}')
+FIRST_TREE=$( echo $MODEL | awk -F "-" '{print $6}')	
 MAIN_TREE=$( echo $MODEL | awk -F "-" '{print $7}')
 MAR=$( echo $MODEL | awk -F "-" '{print $8}')
 MAIN_MODEL="${FIRST_TREE}-${MAIN_TREE}-${MAR}"
@@ -52,8 +52,15 @@ do
 
 	if [ -d $MAIN_MODEL ]
 	then
-		rm -r $MAIN_MODEL
-		mkdir $MAIN_MODEL
+		if [ -f "${MAIN_MODEL}/${MAIN_MODEL}-rep-${K}-${BASIO}-JC-JC.embl_csv" ]
+		then
+			printf "Using already created res in ${MAIN_MODEL}/${MAIN_MODEL}-rep-${K}-${BASIO}-JC-JC.embl_csv \n" 
+			continue 
+		else
+
+			rm -r $MAIN_MODEL
+			mkdir $MAIN_MODEL
+		fi
 	else
 		mkdir $MAIN_MODEL
 

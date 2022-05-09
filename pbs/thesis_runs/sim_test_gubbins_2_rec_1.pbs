@@ -9,7 +9,7 @@ source activate gubbins_update_rec
 
 THREADS=$PBS_ARRAY_INDEX
 cd ~/../ephemeral/gubbins_testing/update_rec_runs
-RUN_DIR="fasttree-raxml-joint-rep-${THREADS}-sim-branch-0.1-rec-1.0"
+RUN_DIR="fasttree-raxml-joint-rep-${THREADS}-sim-branch-0.1-rec-1.0_update2"
 if [ -d $RUN_DIR ]
 then
 	rm -r $RUN_DIR
@@ -21,7 +21,7 @@ else
 fi
 
 START_GUB=$SECONDS
-BASE_ALN="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/poisson_data/rep_${THREADS}_data/sim-branch-0.1-rec-1.0/sim-branch-0.1-rec-1.0.aln"
+BASE_ALN="/rds/general/user/jd2117/ephemeral/gubbins_testing/untarred_simul/simul_data/poisson_data/rep_${THREADS}_data/sim-branch-0.1-rec-1.0/sim-branch-0.1-rec-1.0.aln"
 cp $BASE_ALN ./ 
 /usr/bin/time -v python ~/gubbins_jit/gubbins/python/run_gubbins.py --prefix "${RUN_DIR}-JC-JC" \
 --use-time-stamp --model JC --first-model JC \
