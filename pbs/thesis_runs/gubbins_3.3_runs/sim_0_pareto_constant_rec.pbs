@@ -21,7 +21,7 @@ for REP in {1..10}
 do
 cd "rep_${REP}_data"
 ## Get the simulation done
-bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_JC_PARETO_LENGTH.sh $RECCERS 0.1 0\
+bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_JC_PARETO_LENGTH.sh $RECCERS 0.1 0 \
 ~/gubbins_testing/simul_data/strep_53_uc.aln \
 ~/gubbins_testing/simul_data/26_phage.mfa 
 ## Make the IQtree
