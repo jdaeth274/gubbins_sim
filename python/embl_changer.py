@@ -2,7 +2,6 @@ import os
 import re
 import pandas
 import numpy
-import time
 import sys
 import tqdm
 import multiprocessing as mp

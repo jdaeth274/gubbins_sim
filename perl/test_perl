@@ -1,0 +1,15 @@
+#! /software/perl-5.8.8/bin/perl -w
+
+my $randino = rand();
+print $randino, "\n";
+
+if($randino <= 0.25){
+	print "A", "\n";
+}elsif($randino <= 0.5){
+	print "C", "\n";
+}elsif($randino <= 0.75){
+	print "G","\n";
+}elsif($randino <= 1){
+	print "T","\n"
+}
+

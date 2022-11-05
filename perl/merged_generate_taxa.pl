@@ -606,7 +606,9 @@ sub hom_rec {
     my $d_rand = rand @donor_keys; # Choosing a random donor index
     my $donor = $donor_keys[$d_rand]; # Getting that random donor
     my $start = int(rand(length($ancestor)-2))+1;        # phage may have elongated the sequence; must only choose indices from ancestral genome length, not terminal bases to avoid negative recombination lengths
+    
     while ($start > (length($ancestor) - 1 - $min_length)) {
+        print STDERR "In while loop for ancestor \n";    
         $start = int(rand(length($ancestor)-2))+1;
     }
     print STDERR "Start index $start position $translate{$start}:"; # debug
@@ -616,10 +618,12 @@ sub hom_rec {
         $end++;
         $p_end = rand(1);
     }
+    print STDERR "Created length for reccy";
     $end+=$min_length;
     if ($end > length($ancestor)) { ## Guarding against super long recombination events!
         $end = length($ancestor) - 1;
     }
+    print STDERR "Created length for reccy with min length ";
     my $excluded = 0; # I think this next bit is working out if the same recombination event has occured previously? Oh no I think its seeing if the proposed recombination is within the bounds of the new sequence (which it should be if aligned to the ancestor)
     foreach my $S (keys %{$exclude{$taxon}}) {
         if (($translate{$start} >= $translate{$S} && $translate{$start} <= $translate{$exclude{$taxon}{$S}}) || ($translate{$S} >= $translate{$start} && $translate{$S} <= $translate{$end}) || ($translate{$start} <= $translate{$S} && $translate{$end} >= $translate{$exclude{$taxon}{$S}}) || ($translate{$start} >= $translate{$S} && $translate{$end} <= $translate{$exclude{$taxon}{$S}})) {
@@ -627,6 +631,7 @@ sub hom_rec {
             print STDERR " - match found to event in $taxon at $translate{$S} to $translate{$exclude{$taxon}{$S}} - ";
         }
     }
+    print STDERR "Checking for matched event";
     if ($excluded == 0) {
         print STDERR "accepted!\n";
         $exclude{$taxon}{$start} = $end;
