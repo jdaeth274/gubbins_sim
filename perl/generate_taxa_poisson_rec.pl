@@ -17,6 +17,7 @@ my $branch_prob = 0.05;
 my $rec_prob = 0.1;
 my $ins_prob = 0.1;
 my $debug = 0;
+my $pareto = 0;
 
 GetOptions (
 	"h" => \$help,
@@ -27,6 +28,7 @@ GetOptions (
 	"b=s" => \$branch_prob,
 	"r=s" => \$rec_prob,
 	"i=s" => \$ins_prob,
+	"p=s" => \$pareto,
 	"v" => \$debug
 );
 
@@ -38,8 +40,8 @@ unless (defined($aln_file) && -e $aln_file && defined($mge_file) && -e $mge_file
 	print STDERR "Need alignment file and MGE file!\n"; croak(); exit(1);
 }
 
-unless ($branch_prob >= 0 && $rec_prob >= 0 && $ins_prob >= 0) {
-	print STDERR "branch, recombination and insertion probabilities must be positive rates in the range 0-100!\n"; croak(); exit(1);
+unless ($branch_prob >= 0 && $rec_prob >= 0 && $ins_prob >= 0 && $pareto >= 0) {
+	print STDERR "branch, recombination, insertion and minimum rec length probabilities must be positive rates in the range 0-100!\n"; croak(); exit(1);
 }
 
 # parse genome alignment
@@ -132,7 +134,7 @@ while (scalar(keys %taxa) < $n_taxa) {
 		if ($score > 0) {
 			my $rec_counter = 0;
 			while ($rec_counter < $score){
-				$taxa{$taxon} = hom_rec($taxon);
+				$taxa{$taxon} = hom_rec($taxon, $pareto);
 				$rec_counter += 1;
 			}										# introduce a homologous recombination. Function selects random start and length and replacing ancestor with donor
 		}
@@ -190,7 +192,7 @@ foreach my $taxon (keys %taxa) {
 		if ($score > 0) {
 			my $rec_counter = 0;
 			while ($rec_counter < $score){
-				$taxa{$taxon} = hom_rec($taxon);
+				$taxa{$taxon} = hom_rec($taxon, $pareto);
 				$rec_counter += 1;
 			}										# introduce a homologous recombination. Function selects random start and length and replacing ancestor with donor
 		}
@@ -333,7 +335,7 @@ if ($debug == 1) {
 
 $" = ",";
 
-print SUM "Event#\tType\tStart\tEnd\tTaxa\n";
+print SUM "Event#\tType\tStart\tEnd\tTaxa\torig_start\torig_end\n";
 # printing a log summary
 foreach $e_num (keys %event_log) {
 	my @extant;
@@ -345,7 +347,7 @@ foreach $e_num (keys %event_log) {
 	if ($#extant > -1) {
 		print SUM "$e_num\t$event_type{$e_num}"; # Print the event number then the event type
 		if ($event_type{$e_num} eq 'S' || $event_type{$e_num} eq 'P') {
-			print SUM "\t$Otrans{$translate{$event_pos{$e_num}}}\t$Otrans{$translate{$event_pos{$e_num}}}\t@extant\n"; # print Start, End, taxa in the event.
+			print SUM "\t$Otrans{$translate{$event_pos{$e_num}}}\t$Otrans{$translate{$event_pos{$e_num}}}\t@extant\t$event_pos{$e_num}\t$event_pos{$e_num}\n"; # print Start, End, taxa in the event.
 			if ($event_type{$e_num} eq 'S') {
 				print ATAB "FT   SNP             $Otrans{$translate{$event_pos{$e_num}}}\nFT                   /colour=1\nFT                   /taxa="; # reading onto original seq
 				print TAB "FT   SNP             $rtrans{$translate{$event_pos{$e_num}}}\nFT                   /colour=1\nFT                   /taxa=";
@@ -359,9 +361,12 @@ foreach $e_num (keys %event_log) {
 			}
 		} elsif ($event_type{$e_num} eq 'R') {
 			my @L = split(/\./,$event_pos{$e_num});
-			print SUM "\t$Otrans{$translate{$L[0]}}\t$Otrans{$translate{$L[2]}}\t@extant\n";
+			
+			my $L_length =  $L[2] - $L[0];
+			
+			print SUM "\t$Otrans{$translate{$L[0]}}\t$Otrans{$translate{$L[2]}}\t@extant\t$translate{$L[0]}\t$translate{$L[2]}\n";
 			foreach my $RecSnp (@{$recsnp{$e_num}}) {
-				print SUM "$e_num\tr\t$Otrans{$translate{$RecSnp}}\t$Otrans{$translate{$RecSnp}}\t@extant\n";
+				print SUM "$e_num\tr\t$Otrans{$translate{$RecSnp}}\t$Otrans{$translate{$RecSnp}}\t@extant\t$translate{$RecSnp}\t$translate{$RecSnp}\n";
 			}
 			my $RS = scalar(@{$recsnp{$e_num}});
 			print ATAB "FT   misc_feature    $Otrans{$translate{$L[0]}}..$Otrans{$translate{$L[2]}}\nFT                   /note=introduces $RS SNPs\nFT                   /taxa=";
@@ -438,6 +443,7 @@ foreach $e_num (keys %event_log) {
 close TAB;
 close ATAB;
 
+
 print "I'm done on the simulation \n";
 
 # generate PDF
@@ -447,7 +453,7 @@ print "I'm done on the simulation \n";
 # SUBROUTINES
 
 sub croak {
-	print STDERR "\ngenerate_taxa.pl -a [alignment file] -m [MGE file] -o [output prefix] -n [# taxa (default: 10)] -b [branching prob (default = 0.05)] -r [rec prob (default = 0.1)] -i [insertion prob (default = 0.1)]\n\n";
+	print STDERR "\ngenerate_taxa.pl -a [alignment file] -m [MGE file] -o [output prefix] -n [# taxa (default: 10)] -b [branching prob (default = 0.05)] -r [rec prob (default = 0.1)] -i [insertion prob (default = 0.1)] -p [minimum rec length (default = 0)]\n\n";
 }
 
 sub copy_event_log {
@@ -504,21 +510,27 @@ sub mutate {
 
 sub hom_rec {
 	my $taxon = shift;
+	my $min_length = shift;
 	my $seq = $taxa{$taxon};
 	my @donor_keys = keys %donor;
 	my $d_rand = rand @donor_keys; # Choosing a random donor index
 	my $donor = $donor_keys[$d_rand]; # Getting that random donor
 	my $start = int(rand(length($ancestor)-2))+1;		# phage may have elongated the sequence; must only choose indices from ancestral genome length, not terminal bases to avoid negative recombination lengths
-	print STDERR "Start index $start position $translate{$start}:"; # debug
-	my $end = $start;
+	print STDERR "Start index $start position $translate{$start}: \n"; # debug
+	my $end = $start + $min_length;
+	
+	#print "$end \n";
+	
 	my $p_end = rand(1);
 	while ($p_end > 0.0005) { # Determining how long the recombination event will be,
 		$end++;
 		$p_end = rand(1);
 	}
+	
 	if ($end > length($ancestor)) { ## Guarding against super long recombination events!
 		$end = length($ancestor) - 1;
 	}
+	
 	my $excluded = 0; # I think this next bit is working out if the same recombination event has occured previously? Oh no I think its seeing if the proposed recombination is within the bounds of the new sequence (which it should be if aligned to the ancestor)
 	foreach my $S (keys %{$exclude{$taxon}}) {
 		if (($translate{$start} >= $translate{$S} && $translate{$start} <= $translate{$exclude{$taxon}{$S}}) || ($translate{$S} >= $translate{$start} && $translate{$S} <= $translate{$end}) || ($translate{$start} <= $translate{$S} && $translate{$end} >= $translate{$exclude{$taxon}{$S}}) || ($translate{$start} >= $translate{$S} && $translate{$end} <= $translate{$exclude{$taxon}{$S}})) {
@@ -526,11 +538,21 @@ sub hom_rec {
 			print STDERR " - match found to event in $taxon at $translate{$S} to $translate{$exclude{$taxon}{$S}} - ";
 		}
 	}
-	if ($excluded == 0) {
+	my $short = 0;
+	my $rec_length = $end - $start;
+	if ($rec_length < $min_length){
+		$short = 1;
+		print STDERR " - event too short, narrowed down to $rec_length - should be at least $min_length ";
+	}
+	if ($excluded == 0 && $short == 0) {
 		print STDERR "accepted!\n";
 		$exclude{$taxon}{$start} = $end;
 		my $length = $end - $start + 1;
 		my $donor_seg;
+		#print ":::::::::::::::::::::::::::::::::::::::::::";
+		#print "This is the donor seq \n";
+		#print "$donor_seq \n";
+		#print ":::::::::::::::::::::::::::::::::::::::::::";
 		for (my $c = $start; $c <= $end; $c++) {
 			if (defined($log_insertions{$c+1}) && $log_insertions{$c+1} > 0 && $c ne $end) { # This seems odd, not sure what's going on here
 				my $dashed = '-' x $log_insertions{$c+1};
@@ -539,6 +561,11 @@ sub hom_rec {
 			$donor_seg.=substr($donor{$donor},$c,1);
 		}
 		$length = $translate{$end} - $translate{$start} + 1;
+		if ($length < $min_length){
+			print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+			print "This has been shortened from $rec_length to $length \n";
+			print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n";
+		}
 		my $y = length($donor_seg);
 		my $old = substr($seq,$translate{$start},$length);
 		substr($seq,$translate{$start},$length,$donor_seg);
@@ -579,7 +606,8 @@ sub hom_rec {
 	#			}
 	#		}
 		}
-		print LOG "Taxon $taxon gets sequence from $donor between positions $translate{$start} and $translate{$end} (indices: $start and $end)\n";
+		my $final_length = $end - $start;
+		print LOG "Taxon $taxon gets sequence from $donor between positions $translate{$start} and $translate{$end} (indices: $start and $end) length = $final_length \n";
 	} else {
 		print STDERR " rejected\n"; # debug	
 	}
