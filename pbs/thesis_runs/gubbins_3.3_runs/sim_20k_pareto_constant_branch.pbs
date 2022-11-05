@@ -10,7 +10,7 @@ source activate bioperl
 cd ~/../ephemeral/gubbins_testing/simul_data/pareto_20000
 
 
-RECCERS=$(head -n $PBS_ARRAY_INDEX ~/gubbins_testing/gubbins_sim/data/poisson_rec.txt | tail -n 1)
+RECCERS=$(head -n $PBS_ARRAY_INDEX ~/gubbins_testing/gubbins_sim/data/decimals_0.1s.txt | tail -n 1)
 
 #if [ $RECCERS == "0.1" ]
 #then
