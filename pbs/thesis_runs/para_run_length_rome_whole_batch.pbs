@@ -1,0 +1,62 @@
+#PBS -l select=1:ncpus=12:mem=32gb:cpu_type=rome
+#PBS -l walltime=72:00:00
+#PBS -J 1-30
+
+set -e
+module load anaconda3/personal
+
+source activate gubbins_git
+
+## Switch to the run directory 
+cd ~/../ephemeral/gubbins_testing/parallel_runs
+
+## Get the run models 
+MODEL=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/para_rep.txt | tail -n 1)
+
+SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/sim_length/length_tests/"
+REP=$( echo $MODEL | awk -F "-" '{print "rep_"$2}')
+REP_DASH=$( echo $MODEL | awk -F "-" '{print "rep-"$2}')
+CORES=$( echo $MODEL | awk -F "-" '{print $1}')
+MAIN_MODEL="fasttree-raxml-jar-${CORES}"
+##Conditional statement for the reconstructions 
+	cd "${REP}_runs"
+        BASIO="sim-branch-0.1-rec-0.5-length-500"
+	ALNFILE="${SIMUL_LOC}${REP}_data/${BASIO}/${BASIO}-exact.aln"
+	if [ -d $BASIO ]
+	then
+		cd $BASIO
+	else
+		mkdir -p $BASIO
+		cd $BASIO
+	fi
+
+	## Get the alignment file
+
+	if [ -d $MAIN_MODEL ]
+	then
+		rm -r $MAIN_MODEL
+		mkdir $MAIN_MODEL
+	else
+		mkdir $MAIN_MODEL
+
+	fi
+	cd $MAIN_MODEL
+
+
+	cp $ALNFILE ./
+   	TIME_PREFIX="${MAIN_MODEL}-${REP_DASH}-seq-${line}"
+	echo $PWD
+	START_GUB=$SECONDS
+	/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix ${TIME_PREFIX} \
+	--use-time-stamp --threads $CORES --verbose \
+	--tree-builder raxml --first-tree-builder fasttree \
+	--model JC "${BASIO}-exact.aln" > gubbins_log 2>&1
+	END_GUB=$(( SECONDS - START_GUB ))
+	rm *.aln
+	PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
+	echo "Took this long for ${TIME_PREFIX} run, $END_GUB" > "../${MAIN_MODEL}_time.txt"
+	echo "Used this processor for the runs: $PROC" >> "../${MAIN_MODEL}_time.txt"
+	cd ../../../
+	
+
+echo "Finished the runs for this model -  ${MODEL}-${PBS_ARRAY_INDEX}" >> "./models_finished_branch.txt"

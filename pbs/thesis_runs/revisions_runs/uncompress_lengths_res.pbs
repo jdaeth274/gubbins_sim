@@ -1,0 +1,21 @@
+#PBS -l select=1:ncpus=1:mem=12gb
+#PBS -l walltime=24:00:00
+
+set -e 
+
+cd ~/../ephemeral/gubbins_testing/
+if [ -d length_res ]
+then 
+	cd length_res
+else
+	mkdir length_res
+	cd length_res
+fi
+
+# Get the tar from the home repo
+
+START_DECOMP=$SECONDS
+tar -xzvf ~/gubbins_testing/theses_results/length_res.tar.gz 
+END_DECOMP=$(( SECONDS - START_DECOMP ))
+echo "Took this long for decomp: $END_DECOMP (s) " > decomp_time_length.txt
+
