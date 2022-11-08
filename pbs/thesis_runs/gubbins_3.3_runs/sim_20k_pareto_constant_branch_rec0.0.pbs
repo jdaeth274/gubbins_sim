@@ -9,7 +9,7 @@ source activate bioperl
 cd ~/../ephemeral/gubbins_testing/simul_data/pareto_20000
 
 
-RECCERS=0
+RECCERS=0.0
 
 #if [ $RECCERS == "0.1" ]
 #then

@@ -81,6 +81,6 @@ do
 		cd ../../../
 	fi
 	
-done 3< ~/gubbins_testing/gubbins_sim/data/decimals_0.1s.txt
+done 3< ~/gubbins_testing/gubbins_sim/data/decimals_0.1s_0.2.txt
 
 echo "Finished the runs for this model -  ${MODEL}-${PBS_ARRAY_INDEX}" >> "./models_finished_constant_branch.txt"
