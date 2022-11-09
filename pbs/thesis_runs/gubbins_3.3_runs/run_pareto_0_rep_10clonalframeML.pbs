@@ -1,14 +1,12 @@
 #PBS -l select=1:ncpus=1:mem=12gb
-#PBS -l walltime=48:00:00
-#PBS -J 1-18
-
+#PBS -l walltime=24:00:00
 set -e
 module load anaconda3/personal
 
 source activate clonalframe_env
 
 ## Switch to the run directory 
-cd ~/../ephemeral/gubbins_testing/pareto_20k_runs
+cd ~/../ephemeral/gubbins_testing/pareto_0_runs
 
 ## Set up the run logging 
 # if [ $PBS_ARRAY_INDEX -eq 1 ]
@@ -26,16 +24,17 @@ cd ~/../ephemeral/gubbins_testing/pareto_20k_runs
 # fi
 
 ## Get the run models 
-BASIO=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/pareto_20k_sims.txt | tail -n 1)
+BASIO=$( head -n 9 ~/gubbins_testing/poisson_datasets.txt | tail -n 1)
 
-SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/pareto_20000/"
+SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/pareto_0/"
 FIRST_TREE="clonalframeML"
 MAIN_TREE="clonalframeML"
 MAR="clonalframeML"
 MAIN_MODEL="${FIRST_TREE}-${MAIN_TREE}-${MAR}"
 ##Conditional statement for the reconstructions 
-for K in {1..10}
-do
+#for K in {1..10}
+#do
+	K=10
 	cd "rep_${K}_runs"
 	ALNFILE="${SIMUL_LOC}rep_${K}_data/${BASIO}/${BASIO}.aln"
     # We'll use the raw-raw-raw tree file in this run 
@@ -74,5 +73,5 @@ do
 	echo "Took this long for $MAIN_MODEL run, $END_GUB" > "../${MAIN_MODEL}_time.txt"
 	echo "Used this processor for the runs: $PROC" >> "../${MAIN_MODEL}_time.txt"
 	cd ../../../
-done	
+#done	
 echo "Finished the runs for this model -  ${MAIN_MODEL}-${BASIO}-${PBS_ARRAY_INDEX}" >> "./models_finished_clonalframe.txt"
