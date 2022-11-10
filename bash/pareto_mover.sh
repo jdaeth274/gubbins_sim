@@ -18,8 +18,8 @@ do
         while read model <&3
         do  
             cd $model 
-            cp *per_branch* ../../../pareto_0_gubbins_csvs
-            cp *node_labelled* ../../pareto_0_gubbins_trees
+            cp *per_branch* "../../../pareto_0_gubbins_csvs/${model}-rep-${K}-${line}.per_branch_statistics.csv"
+            cp *node_labelled* "../../../pareto_0_gubbins_trees/${model}-rep-${K}-${line}.node_labelled.final_tree.tre" 
             printf "Done on ${K}-${line}-${model}\n"
             cd ../
         done 3< ~/gubbins_testing/gubbins_3.3_simple_complex.txt
