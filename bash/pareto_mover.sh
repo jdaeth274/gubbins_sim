@@ -21,8 +21,11 @@ do
             cp *per_branch* ../../../pareto_0_gubbins_csvs
             cp *node_labelled* ../../pareto_0_gubbins_trees
             printf "Done on ${K}-${line}-${model}\n"
+            cd ../
         done 3< ~/gubbins_testing/gubbins_3.3_simple_complex.txt
+        cd ../
     done 
+    cd ../
 done 
 
 echo "Done on all isos!!!"
