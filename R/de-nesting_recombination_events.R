@@ -221,7 +221,13 @@ nest_snow_func <- function(summary_rows, list_of_summaries, out_dir){
   for(k in 1:length(run_through_rows)){
     current_summary <- run_through_rows[k]
     current_output <- paste(out_dir, basename(current_summary), sep = "")
-    summary_df <- read.table(current_summary, sep = "\t", comment.char = "", header = TRUE)     
+    summary_df <- read.table(current_summary, sep = "\t", comment.char = "", header = TRUE) 
+    ## Updated the summary output with pareto runs so need to remove these additional
+    ## columns as the rest is based on indexes!
+    if("orig_start" %in% colnames(summary_df)){
+      summary_df <- summary_df %>%
+        select(-c(orig_start, orig_end))
+    }
     complete_run_through(summary_df, current_output)    
   }
 }
