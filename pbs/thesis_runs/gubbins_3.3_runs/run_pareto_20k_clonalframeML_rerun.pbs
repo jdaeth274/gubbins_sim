@@ -26,7 +26,7 @@ cd ~/../ephemeral/gubbins_testing/pareto_20k_runs
 # fi
 
 ## Get the run models 
-BASIO=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/pareto_20k_clonal_frame_rerun.txt | tail -n 1)
+BASIO=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/pareto_20k_clonalframe_rerun.txt | tail -n 1)
 
 SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/pareto_20000/"
 FIRST_TREE="clonalframeML"
