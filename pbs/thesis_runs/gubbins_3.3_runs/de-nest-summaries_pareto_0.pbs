@@ -8,6 +8,8 @@ source activate gubbins_sim
 
 cd ~/gubbins_testing
 
+mkdir -p de-nested-summaries_pareto_0
+
 ## Run the gubbins_ppv 
 START=$SECONDS
 Rscript --vanilla ./gubbins_sim/R/de-nesting_recombination_events.R \
