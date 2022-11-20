@@ -7,6 +7,12 @@ module load anaconda3/personal
 
 source activate gubbins_git
 
+## !!!!
+## Make sure gubbins git also has:
+## - pandas
+## - tqdm
+## - psutil
+
 ## Switch to the run directory 
 cd ~/../ephemeral/gubbins_testing/pareto_20k_runs
 
