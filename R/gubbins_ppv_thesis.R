@@ -185,6 +185,10 @@ data_cleaner <- function(gubbins_snps, gubbins_tree_file,
   
   simul_summary <- read.table(simul_summary_file, sep = "\t",
                               comment.char = "", header = TRUE)
+  if("orig_start" %in% colnames(simul_summary)){
+    simul_summary <- simul_summary %>%
+    select(-c(orig_start, orig_end))
+  }
   
   simul_tree <- read.tree(simul_tree_file)
   
