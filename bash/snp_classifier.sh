@@ -40,7 +40,7 @@ function my_func {
 export -f my_func
 #parset line,GFF_DIR,SCRIPT_LOC,COUNTER 
 START=$SECONDS
-parallel -j $THREADS my_func ::: "${EMBL_DIR}/"*-rec-0.0*.embl_csv.csv ::: $GFF_DIR ::: $SCRIPT_LOC ::: $COUNTER
+parallel -j $THREADS my_func ::: "${EMBL_DIR}/"*.embl_csv.csv ::: $GFF_DIR ::: $SCRIPT_LOC ::: $COUNTER
 
 END=$(( SECONDS - START ))
 printf "\n"
