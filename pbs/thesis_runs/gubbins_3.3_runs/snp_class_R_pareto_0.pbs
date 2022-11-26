@@ -1,0 +1,19 @@
+#PBS -l select=1:ncpus=32:mem=32gb
+#PBS -l walltime=24:00:00
+
+set -e 
+
+module load anaconda3/personal
+
+source activate gubbins_sim
+
+cd ~/gubbins_testing/gubbins_3.3_runs/
+
+mkdir -p pareto_0_snpz 
+cd pareto_0_snpz
+bash ../../gubbins_sim/bash/snp_classifier.R ../pareto_0_embls ../pareto_0_gubbins_gff 32 \
+../../gubbins_sim/R/snp_classifier.R 
+
+echo "Done on the SNP classifier!!!"
+
+
