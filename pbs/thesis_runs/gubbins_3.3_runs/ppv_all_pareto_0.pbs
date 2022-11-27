@@ -10,8 +10,8 @@ cd ~/gubbins_testing/gubbins_3.3_run_data/
 
 ## Run the gubbins_ppv 
 START=$SECONDS
-Rscript --vanilla ../gubbins_sim/R/gubbins_ppv_thesis.R --embl-dir ./pareto_0_snps/ \
---tree-dir ./pareto_0_gubbins_trees/ --summary-dir ./de-nested-summaries_pareto_0/ --threads 32 \
+Rscript --vanilla ../gubbins_sim/R/gubbins_ppv_thesis.R --embl-dir ./pareto_0_snpz/ \
+--tree-dir ./pareto_0_trees/ --summary-dir ./de-nested-summaries_pareto_0/ --threads 32 \
 --out pareto_0_ppv_denested.csv
 END=$(( SECONDS - START ))
 printf "Took this long to run %s (S) \n" $END 
