@@ -1,4 +1,4 @@
-#PBS -l select=1:ncpus=4:mem=64gb:cpu_type=rome
+#PBS -l select=1:ncpus=1:mem=48gb:cpu_type=rome
 #PBS -l walltime=72:00:00
 #PBS -J 1-100
 
