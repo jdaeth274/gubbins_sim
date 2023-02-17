@@ -1,0 +1,83 @@
+#PBS -l select=1:ncpus=1:mem=32gb:cpu_type=rome
+#PBS -l walltime=24:00:00
+#PBS -J 1-170
+
+set -e
+module load anaconda3/personal
+
+source activate gubbins_git
+
+## Switch to the run directory 
+cd ~/../ephemeral/gubbins_testing/snp_runs
+
+## Get the run models 
+MODEL=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/snp_tests_models.txt | tail -n 1)
+
+## Set up the model stats
+SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/length_tests/orig_simul/simul_data/pareto_0/"
+REP=$( echo $MODEL | awk -F "-" '{print $4"_"$5}')
+REP_DASH=$( echo $MODEL | awk -F "-" '{print $4"-"$5}')
+FIRST_TREE=$( echo $MODEL | awk -F "-" '{print $1}')
+MAIN_TREE=$( echo $MODEL | awk -F "-" '{print $2}')
+MAR=$( echo $MODEL | awk -F "-" '{print $3}')
+MAIN_MODEL="${FIRST_TREE}-${MAIN_TREE}-${MAR}"
+BRANCH=$(echo $MODEL | awk -F "-" '{print $7}')
+REC=$(echo $MODEL | awk -F "-" '{print $9}')
+
+## Move into the run rep data directory 
+cd "${REP}_runs"
+
+## Set path to alignment file 
+BASIO="sim-branch-${BRANCH}-rec-${REC}"
+ALNFILE="${SIMUL_LOC}${REP}_data/${BASIO}/${BASIO}.aln"
+
+## Move into branch and rec overarching directory 
+if [ -d $BASIO ]
+then
+	cd $BASIO
+else
+	mkdir -p $BASIO
+	cd $BASIO
+fi
+
+## Move into the fasttree-raxml-joint directory 
+
+if [ -d $MAIN_MODEL ]
+then
+	rm -r $MAIN_MODEL
+	mkdir $MAIN_MODEL
+else
+	mkdir $MAIN_MODEL
+fi
+cd $MAIN_MODEL
+
+
+## Begin the run for the --min-snp 2 gubbins run.
+
+cp $ALNFILE ./
+TIME_PREFIX="${MAIN_MODEL}-${REP_DASH}-branch-${BRANCH}-rec-${REC}-min-snp-2"
+echo $PWD
+START_GUB=$SECONDS
+FIRST_TREE=$(echo $FIRST_TREE | sed 's/_/-/g')
+/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix ${TIME_PREFIX} --use-time-stamp --threads 1--verbose \
+--tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE --min-snps 2 \
+--model JC "${BASIO}.aln" > gubbins_log 2>&1 
+END_GUB=$(( SECONDS - START_GUB ))
+PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
+echo "Took this long for $TIME_PREFIX run, $END_GUB" > "../${TIME_PREFIX}_time.txt"
+echo "Used this processor for the runs: $PROC" >> "../${TIME_PREFIX}_time.txt"
+
+## Begin the min-snp-3 run for the same dataset 
+TIME_PREFIX="${MAIN_MODEL}-${REP_DASH}-branch-${BRANCH}-rec-${REC}-min-snp-3"
+/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix ${TIME_PREFIX} --use-time-stamp --threads 1 --verbose \
+--tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE --min-snps 3 \
+--model JC "${BASIO}.aln" > gubbins_log 2>&1
+END_GUB=$(( SECONDS - START_GUB ))
+rm *.aln
+PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
+echo "Took this long for ${TIME_PREFIX} run, $END_GUB" > "../${TIME_PREFIX}_time.txt"
+echo "Used this processor for the runs: $PROC" >> "../${TIME_PREFIX}_time.txt"
+cd ../../../
+	
+
+echo "Finished the runs for this model -  ${MODEL}-${PBS_ARRAY_INDEX}" >> "./models_finished_snps.txt"
