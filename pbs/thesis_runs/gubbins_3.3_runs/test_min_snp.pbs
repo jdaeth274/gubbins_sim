@@ -14,7 +14,7 @@ cd ~/../ephemeral/gubbins_testing/snp_runs
 MODEL=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/snp_tests_models.txt | tail -n 1)
 
 ## Set up the model stats
-SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/length_tests/orig_simul/simul_data/pareto_0/"
+SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/orig_simul/simul_data/pareto_0/"
 REP=$( echo $MODEL | awk -F "-" '{print $4"_"$5}')
 REP_DASH=$( echo $MODEL | awk -F "-" '{print $4"-"$5}')
 FIRST_TREE=$( echo $MODEL | awk -F "-" '{print $1}')
