@@ -11,7 +11,7 @@ cd ~/gubbins_testing/gubbins_3.3_run_data/min_snp_data
 
 mkdir -p snp_class_snpz 
 cd snp_class_snpz
-bash ../../../gubbins_sim/bash/snp_classifier.sh ../snp_snps ../snp_gffs 32 \
+bash ../../../gubbins_sim/bash/snp_classifier.sh ../snp_snpz ../snp_gffs 32 \
 ../../../gubbins_sim/R/snp_classifier.R 
 
 echo "Done on the SNP classifier!!!"
