@@ -10,7 +10,7 @@ cd ~/gubbins_testing/gubbins_3.3_run_data/min_snp_data
 
 ## Run the gubbins_ppv 
 START=$SECONDS
-Rscript --vanilla ../../gubbins_sim/R/gubbins_ppv_thesis.R --embl-dir ./snp_snpz/ \
+Rscript --vanilla ../../gubbins_sim/R/gubbins_ppv_thesis.R --embl-dir ./snp_class_snpz/ \
 --tree-dir ./snp_trees/ --summary-dir ../de-nested-summaries_pareto_0/ --threads 32 \
 --out min_snp_ppv_separate.csv --snps yes
 END=$(( SECONDS - START ))
