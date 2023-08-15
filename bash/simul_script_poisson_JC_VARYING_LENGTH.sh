@@ -23,9 +23,9 @@ dir="sim-branch-${BRANCH_RATE}-rec-${REC_RATE}-length-${NUM_SEQS}"
 if [ -d $dir ]
 then
 	rm -r $dir
-	mkdir $dir
+	mkdir -p $dir
 else
-	mkdir $dir
+	mkdir -p $dir
 fi
 cd $dir
 perl "${PERLDIR}generate_taxa_poisson_rec.pl" -a $DONOR_ALN \
