@@ -1,0 +1,46 @@
+#PBS -l select=1:ncpus=1:mem=6gb
+#PBS -l walltime=24:00:00
+
+set -e
+module load anaconda3/personal
+
+source activate bioperl
+
+cd ~/../ephemeral/gubbins_testing/simul_data/time_tests
+
+#if [ $RECCERS == "0.1" ]
+#then
+#	echo "wassssssssup"
+#else
+
+for REP in {1..20}
+do
+## Get the simulation done
+if [ $REP -gt 10 ]
+then
+## Parteo 20k runs 
+REPPERS=$(( REP - 10 ))
+cd "rep_${REPPERS}_data"
+bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_JC_VARYING_LENGTH.sh \
+0.1 0.1 \
+~/gubbins_testing/simul_data/strep_53_uc.aln \
+~/gubbins_testing/simul_data/26_phage.mfa \
+$LENGTH \
+20000 \
+0.04
+else
+## Pareto 0 runs with 1 for rec rate
+cd "rep_${REP}_data"
+bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_JC_VARYING_LENGTH.sh \
+0.1 1 \
+~/gubbins_testing/simul_data/strep_53_uc.aln \
+~/gubbins_testing/simul_data/26_phage.mfa \
+$LENGTH \
+0 \
+0.04
+fi
+
+cd ../
+## Make the IQtree
+done
+
