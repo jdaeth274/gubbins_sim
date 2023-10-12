@@ -14,7 +14,7 @@ SAMPLE_RATE=$7
 
 if [ $# -ne 7 ]
 then
-	echo "Incorrect number of argument need 5 have $# "
+	echo "Incorrect number of argument need 7 have $# "
 	echo "   "
 	echo "bash <branch_rate> <rec_rate> <donor_aln> <phage_aln> <num_seqs> <minimum_recombination_length> <sample_rate>"
 	echo ""

@@ -21,7 +21,7 @@ then
 ## Parteo 20k runs 
 REPPERS=$(( REP - 10 ))
 cd "rep_${REPPERS}_data"
-bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_JC_VARYING_LENGTH.sh \
+bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_SAMPLING_TIMES.sh \
 0.1 0.1 \
 ~/gubbins_testing/simul_data/strep_53_uc.aln \
 ~/gubbins_testing/simul_data/26_phage.mfa \
@@ -31,7 +31,7 @@ $LENGTH \
 else
 ## Pareto 0 runs with 1 for rec rate
 cd "rep_${REP}_data"
-bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_JC_VARYING_LENGTH.sh \
+bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_SAMPLING_TIMES.sh \
 0.1 1 \
 ~/gubbins_testing/simul_data/strep_53_uc.aln \
 ~/gubbins_testing/simul_data/26_phage.mfa \
