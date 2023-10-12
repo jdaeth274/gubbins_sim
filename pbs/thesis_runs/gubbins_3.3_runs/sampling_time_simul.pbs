@@ -25,7 +25,7 @@ bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_SAMPLING_TIMES.sh \
 0.1 0.1 \
 ~/gubbins_testing/simul_data/strep_53_uc.aln \
 ~/gubbins_testing/simul_data/26_phage.mfa \
-$LENGTH \
+100 \
 20000 \
 0.04
 else
@@ -35,7 +35,7 @@ bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_SAMPLING_TIMES.sh \
 0.1 1 \
 ~/gubbins_testing/simul_data/strep_53_uc.aln \
 ~/gubbins_testing/simul_data/26_phage.mfa \
-$LENGTH \
+100 \
 0 \
 0.04
 fi
