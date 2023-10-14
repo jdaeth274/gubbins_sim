@@ -66,7 +66,7 @@ then
     FIRST_TREE=$(echo $FIRST_TREE | sed 's/_/-/g')
     /usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix ${TIME_PREFIX} --use-time-stamp --threads 1 --verbose \
 	--tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE --mar \
-	--model JC "${BASIO}-exact.aln" > gubbins_log 2>&1 
+	--model JC "${BASIO}.aln" > gubbins_log 2>&1 
 	END_GUB=$(( SECONDS - START_GUB ))
 	rm *.aln
 	cd ../../../
@@ -78,7 +78,7 @@ else
 
 	/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix ${TIME_PREFIX} --use-time-stamp --threads 1 --verbose \
 	--tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE \
-	--model JC "${BASIO}-exact.aln" > gubbins_log 2>&1
+	--model JC "${BASIO}.aln" > gubbins_log 2>&1
 	END_GUB=$(( SECONDS - START_GUB ))
 	rm *.aln
 	cd ../../../

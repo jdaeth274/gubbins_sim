@@ -1,0 +1,91 @@
+#PBS -l select=1:ncpus=1:mem=48gb:cpu_type=rome
+#PBS -l walltime=72:00:00
+#PBS -J 1-10
+
+set -e
+module load anaconda3/personal
+
+source activate clonalframe_env
+
+## Switch to the run directory 
+cd ~/../ephemeral/gubbins_testing/time_runs
+
+## Get the run models 
+MODEL=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/iqtree_1000_runs.txt | tail -n 1)
+
+SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/time_tests/"
+REP=$( echo $MODEL | awk -F "-" '{print "rep_"$3}')
+REP_DASH=$( echo $MODEL | awk -F "-" '{print "rep-"$3}')
+SEQ_LENGTH=$(echo $MODEL | awk -F "-" '{print $1}')
+FIRST_TREE="ClonalFrameML"
+MAIN_TREE="ClonalFrameML"
+MAR="ClonalFrameML"
+MAIN_MODEL="${FIRST_TREE}-${MAIN_TREE}-${MAR}"
+##Conditional statement for the reconstructions 
+
+
+for K in {1..2};
+do 
+
+if [ $K -eq 1 ]
+then 
+    PARETO="0"
+    REC="1"
+else
+    PARETO="20000"
+    REC="0.1"
+fi
+
+cd "${REP}_runs"
+BASIO="sim-branch-0.1-rec-${REC}-length-100-pareto-${PARETO}"
+ALNFILE="${SIMUL_LOC}${REP}_data/${BASIO}/${BASIO}.aln"
+## Need to make the IQtree first 
+cd "${SIMUL_LOC}${REP}_data/${BASIO}"
+IQ_PREFIX="${BASIO}"
+if [ -f "${IQ_PREFIX}.treefile" ]
+then
+	printf "Using alread made tree %s\n" "${IQ_PREFIX}.treefile"
+else
+    printf "Can't find the tree, exiting!"
+    exit 
+	#iqtree -v -s *exact.aln -T 4 -m JC --prefix $IQ_PREFIX
+	#cp *.treefile "${IQ_PREFIX}.tre"
+fi
+
+TREFILE="${SIMUL_LOC}${REP}_data/${BASIO}/${IQ_PREFIX}.treefile"
+
+## Now the tree is made lets switch back to the length_runs dir
+cd ~/../ephemeral/gubbins_testing/time_runs
+cd "${REP}_runs"	
+if [ -d $BASIO ]
+then
+	cd $BASIO
+else
+	mkdir -p $BASIO
+	cd $BASIO
+fi
+## Get the alignment file
+if [ -d $MAIN_MODEL ]
+then
+	rm -r $MAIN_MODEL
+	mkdir $MAIN_MODEL
+else
+	mkdir $MAIN_MODEL
+fi
+cd $MAIN_MODEL
+
+
+cp $ALNFILE ./
+cp $TREFILE ./
+TIME_PREFIX="${MAIN_MODEL}-${REP_DASH}-seq-100-pareto-${PARETO}"
+echo $PWD
+START_GUB=$SECONDS
+/usr/bin/time -v ClonalFrameML "${IQ_PREFIX}.treefile" "${BASIO}.aln" \
+"${MAIN_MODEL}-${REP_DASH}-${BASIO}-JC-JC" > gubbins_log 2>&1 
+END_GUB=$(( SECONDS - START_GUB ))
+rm *.aln
+cd ../../../
+
+done
+
+echo "Finished the runs for this model -  ${MODEL}-${PBS_ARRAY_INDEX}" >> "./models_finished_clonal.txt"
