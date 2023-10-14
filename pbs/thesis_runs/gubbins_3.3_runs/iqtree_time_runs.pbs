@@ -16,7 +16,7 @@ REP=$( echo $MODEL | awk -F "-" '{print $2"_"$3}')
 REP_DASH=$( echo $MODEL | awk -F "-" '{print $2"-"$3}')
 #LENGTH=$( echo $MODEL | awk -F "-" '{print $1}')
 ##Conditional statement for the reconstructions 
-cd "${REP}_runs"
+cd "${REP}_data"
 
 for K in {1..2};
 do
