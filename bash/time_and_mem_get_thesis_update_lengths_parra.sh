@@ -29,7 +29,7 @@ for K in {1..10};
 do 
 cd "rep_${K}_runs"
 ## Now we need to go through each of the sim conditions 
-cd "sim-branch-0.1-rec-0.5-length-500"
+cd "sim-branch-0.1-rec-0.5-length-1000"
 cat $MODEL_FILE | while read line
 do 
 echo "$MODEL_NUM"
