@@ -36,6 +36,7 @@ fi
 cd "${REP}_runs"
 BASIO="sim-branch-0.1-rec-${REC}-length-100-pareto-${PARETO}"
 ALNFILE="${SIMUL_LOC}${REP}_data/${BASIO}/${BASIO}.aln"
+DATEFILE="${SIMUL_LOC}${REP}_data/${BASIO}/${BASIO}.sample_time.tsv"
 if [ -d $BASIO ]
 then
 	cd $BASIO
@@ -57,6 +58,10 @@ fi
 cd $MAIN_MODEL
 
 cp $ALNFILE ./
+cp $DATEFILE ./
+## Got to get rid of the header line in the dating file unfortunately 
+awk 'NR > 1' "${BASIO}.sample_time.tsv" > temp.tsv
+mv temp.tsv "${BASIO}.sample_time.tsv"
 TIME_PREFIX="${MAIN_MODEL}-${REP_DASH}-seq-100-pareto-${PARETO}"
 echo $PWD
 if [ $MAR == "mar" ]
@@ -66,6 +71,7 @@ then
     FIRST_TREE=$(echo $FIRST_TREE | sed 's/_/-/g')
     /usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix ${TIME_PREFIX} --use-time-stamp --threads 1 --verbose \
 	--tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE --mar \
+	--date "${BASIO}.sample_time.tsv" \
 	--model JC "${BASIO}.aln" > gubbins_log 2>&1 
 	END_GUB=$(( SECONDS - START_GUB ))
 	rm *.aln
@@ -78,6 +84,7 @@ else
 
 	/usr/bin/time -v python ~/gubbins/python/run_gubbins.py --prefix ${TIME_PREFIX} --use-time-stamp --threads 1 --verbose \
 	--tree-builder $MAIN_TREE --first-tree-builder $FIRST_TREE \
+	--date "${BASIO}.sample_time.tsv" \
 	--model JC "${BASIO}.aln" > gubbins_log 2>&1
 	END_GUB=$(( SECONDS - START_GUB ))
 	rm *.aln
