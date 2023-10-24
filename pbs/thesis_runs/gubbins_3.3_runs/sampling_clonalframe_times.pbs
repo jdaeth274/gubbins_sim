@@ -94,23 +94,24 @@ iqtree -nt 1 -safe -redo -m JC \
 -s $ALNFILE \
 -te ClonalFrameML-ClonalFrameML-ClonalFrameML*.labelled_tree.newick \
 --tree-fix --date "${BASIO}.sample_time.tsv" \
---prefix ${BASIO} -blfix --date-options '-l 0' 
+--prefix "${MAIN_MODEL}-${REP_DASH}-${BASIO}-JC-JC" -blfix --date-options '-l 0' 
 
 
 ## Run it on the simul one too
 cd "${SIMUL_LOC}${REP}_data/${BASIO}/"
-
+awk 'NR > 1' "${BASIO}.sample_time.tsv" > temp.tsv
 
 iqtree -nt 1 -safe -redo -m JC \
 -s $ALNFILE \
--te ClonalFrameML-ClonalFrameML-ClonalFrameML*.labelled_tree.newick \
---tree-fix --date "${BASIO}.sample_time.tsv" \
---prefix ${BASIO} -blfix --date-options '-l 0' 
+-te $TREFILE \
+--tree-fix --date temp.tsv \
+--prefix "raw-raw-raw-${REP_DASH}-${BASIO}-JC-JC"  -blfix --date-options '-l 0' 
 
 
 END_GUB=$(( SECONDS - START_GUB ))
 rm *.aln
-cd ../../../
+cd ~/../ephemeral/gubbins_testing/time_runs
+ 
 
 done
 
