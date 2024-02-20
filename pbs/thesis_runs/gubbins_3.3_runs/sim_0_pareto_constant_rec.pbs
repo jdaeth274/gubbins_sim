@@ -27,7 +27,7 @@ bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_JC_PARETO_LENGTH.sh
 ## Make the IQtree
 SIM_PREFIX="sim-branch-${RECCERS}-rec-0.1"
 cd $SIM_PREFIX
-IQ_PREFIX="raw-raw-raw-${REP}-${SIM_PREFIX}-JC-JC"
+IQ_PREFIX="raw-raw-raw-rep-${REP}-${SIM_PREFIX}-JC-JC"
 ORIG_PREFIX="orig-orig-orig-rep-${REP}-${SIM_PREFIX}-JC-JC.tre"
 iqtree -v -s *.aln -T 4 -m JC --prefix $IQ_PREFIX
 rm *ckp.gz *.iqtree *.bionj *.mldist
