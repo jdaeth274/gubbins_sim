@@ -98,7 +98,7 @@ iqtree -nt 1 -safe -redo -m JC \
 --tree-fix --date temp.tsv \
 --prefix "raw-raw-raw-${REP_DASH}-${BASIO}-JC-JC"  -blfix --date-options '-l 0' 
 
-
+cd - 
 END_GUB=$(( SECONDS - START_GUB ))
 rm *.aln
 cd ~/../ephemeral/gubbins_testing/time_runs
