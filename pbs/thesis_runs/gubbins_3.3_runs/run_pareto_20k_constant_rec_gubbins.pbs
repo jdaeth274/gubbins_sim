@@ -24,7 +24,7 @@ MAIN_MODEL="${FIRST_TREE}-${MAIN_TREE}-${MAR}"
 while read line <&3
 do
 	cd "${REP}_runs"
-    BASIO="sim-branch-${line}-rec-0.1"
+    BASIO="sim-branch-${line}-rec-0.25"
 	ALNFILE="${SIMUL_LOC}${REP}_data/${BASIO}/${BASIO}.aln"
 	if [ -d $BASIO ]
 	then
@@ -48,7 +48,7 @@ do
 
 
 	cp $ALNFILE ./
-    TIME_PREFIX="${MAIN_MODEL}-${REP_DASH}"
+    TIME_PREFIX="${MAIN_MODEL}-${REP_DASH}-${BASIO}-JC-JC"
 	echo $PWD
 	if [ $MAR == "mar" ]
 	then
