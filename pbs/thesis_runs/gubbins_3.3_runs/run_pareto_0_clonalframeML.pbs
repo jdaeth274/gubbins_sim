@@ -26,7 +26,7 @@ cd ~/../ephemeral/gubbins_testing/pareto_0_runs
 # fi
 
 ## Get the run models 
-BASIO=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/poisson_datasets.txt | tail -n 1)
+BASIO=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/poisson_datasets_branch.txt | tail -n 1)
 
 SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/pareto_0/"
 FIRST_TREE="clonalframeML"
@@ -39,7 +39,7 @@ do
 	cd "rep_${K}_runs"
 	ALNFILE="${SIMUL_LOC}rep_${K}_data/${BASIO}/${BASIO}.aln"
     # We'll use the raw-raw-raw tree file in this run 
-    TREFILE="${SIMUL_LOC}rep_${K}_data/${BASIO}/raw-raw-raw-${K}-${BASIO}-JC-JC.tre"
+    TREFILE="${SIMUL_LOC}rep_${K}_data/${BASIO}/raw-raw-raw-rep-${K}-${BASIO}-JC-JC.tre"
     
 	if [ -d $BASIO ]
 	then
