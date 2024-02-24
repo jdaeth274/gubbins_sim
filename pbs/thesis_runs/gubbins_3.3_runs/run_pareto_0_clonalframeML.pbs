@@ -1,6 +1,6 @@
 #PBS -l select=1:ncpus=1:mem=12gb
 #PBS -l walltime=48:00:00
-#PBS -J 1-9
+#PBS -J 1-90
 
 set -e
 module load anaconda3/personal
@@ -26,7 +26,10 @@ cd ~/../ephemeral/gubbins_testing/pareto_0_runs
 # fi
 
 ## Get the run models 
-BASIO=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/poisson_datasets_branch.txt | tail -n 1)
+CONDS=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/poisson_datasets_branch_reps.txt | tail -n 1)
+
+BASIO=$(echo $CONDS | sed 's/-rep.*$//g')
+REP=$(echo $CONDS | sed 's/^.*rep-//g')
 
 SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/pareto_0/"
 FIRST_TREE="clonalframeML"
@@ -34,12 +37,10 @@ MAIN_TREE="clonalframeML"
 MAR="clonalframeML"
 MAIN_MODEL="${FIRST_TREE}-${MAIN_TREE}-${MAR}"
 ##Conditional statement for the reconstructions 
-for K in {1..10}
-do
-	cd "rep_${K}_runs"
-	ALNFILE="${SIMUL_LOC}rep_${K}_data/${BASIO}/${BASIO}.aln"
-    # We'll use the raw-raw-raw tree file in this run 
-    TREFILE="${SIMUL_LOC}rep_${K}_data/${BASIO}/raw-raw-raw-rep-${K}-${BASIO}-JC-JC.tre"
+cd "rep_${REP}_runs"
+ALNFILE="${SIMUL_LOC}rep_${REP}_data/${BASIO}/${BASIO}.aln"
+# We'll use the raw-raw-raw tree file in this run 
+TREFILE="${SIMUL_LOC}rep_${REP}_data/${BASIO}/raw-raw-raw-rep-${REP}-${BASIO}-JC-JC.tre"
     
 	if [ -d $BASIO ]
 	then
@@ -66,13 +67,12 @@ do
     cp $TREFILE ./
 
 	START_GUB=$SECONDS
-	/usr/bin/time -v ClonalFrameML "raw-raw-raw-rep-${K}-${BASIO}-JC-JC.tre" "${BASIO}.aln" "${MAIN_MODEL}-rep-${K}-${BASIO}-JC-JC" > gubbins_log 2>&1
+	/usr/bin/time -v ClonalFrameML "raw-raw-raw-rep-${REP}-${BASIO}-JC-JC.tre" "${BASIO}.aln" "${MAIN_MODEL}-rep-${REP}-${BASIO}-JC-JC" > gubbins_log 2>&1
     END_GUB=$(( SECONDS - START_GUB ))
-	rm "raw-raw-raw-${K}-${BASIO}-JC-JC.tre" 
-	rm *.aln
+	
 	PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
 	echo "Took this long for $MAIN_MODEL run, $END_GUB" > "../${MAIN_MODEL}_time.txt"
 	echo "Used this processor for the runs: $PROC" >> "../${MAIN_MODEL}_time.txt"
 	cd ../../../
-done	
+
 echo "Finished the runs for this model -  ${MAIN_MODEL}-${BASIO}-${PBS_ARRAY_INDEX}" >> "./models_finished_clonalframe.txt"
