@@ -13,6 +13,7 @@ mkdir -p pareto_20k_gubbins_embls
 for K in {1..10}
 do
     cd "rep_${K}_runs"
+    ls -d * > dir_list.txt
     cat dir_list.txt | while read line;
     do 
         cd $line
