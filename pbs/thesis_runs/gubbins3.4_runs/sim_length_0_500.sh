@@ -26,17 +26,16 @@ bash ~/gubbins_testing/gubbins_sim/bash/simul_script_poisson_JC_VARYING_LENGTH.s
 ~/gubbins_testing/simul_data/26_phage.mfa \
 $LENGTH
 
+cd sim-branch-0.1-rec-0.5-length-${LENGTH}
 AIM_LENGTH=$(( LENGTH * 2 ))
 NUM_ISOS=$(grep -c "^>" "sim-branch-0.1-rec-0.5-length-${LENGTH}.aln")
 if [ $NUM_ISOS -ne $LENGTH ]
 then 
-printf "Rep %s Length %s had %s isolates \n" $REP $LENGTH $NUM_ISOS >> ../../altered_lengths.txt
+printf "Rep %s Length %s had %s isolates \n" $REP $LENGTH $NUM_ISOS >> ../../../altered_lengths_wassup.txt
 fi
 head -n $AIM_LENGTH "sim-branch-0.1-rec-0.5-length-${LENGTH}.aln" > "sim-branch-0.1-rec-0.5-length-${LENGTH}-exact.aln"
 
-
-
-cd ../
+cd ../../
 ## Make the IQtree
 done
 
