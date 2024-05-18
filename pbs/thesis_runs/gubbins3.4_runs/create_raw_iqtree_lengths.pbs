@@ -13,7 +13,7 @@ cd ~/../ephemeral/gubbins_testing/iqtree_times
 ## Get the run models 
 MODEL=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/iqtree_reps.txt | tail -n 1)
 
-SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/sim_length/length_tests/length_tests/"
+SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/length_tests/length_tests/"
 REP=$( echo $MODEL | awk -F "-" '{print $2"_"$3}')
 REP_DASH=$( echo $MODEL | awk -F "-" '{print $2"-"$3}')
 LENGTH=$( echo $MODEL | awk -F "-" '{print $1}')
