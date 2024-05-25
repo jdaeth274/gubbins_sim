@@ -3,10 +3,10 @@
 
 set -e 
 
-cd ~/../ephemeral/gubbins_testing/simul_data/
+cd ~/../ephemeral/gubbins_testing/simul_data/length_tests/
 
 SIMUL_START=$SECONDS
-tar -cf - length_tests/ | pigz -9 -p 8 > length_sim_tarred.tar.gz 
+tar -cf - length_tests/ | pigz -9 -p 8 > length_sim_tarred_50_1000.tar.gz 
 END_TAR=$(( SECONDS - SIMUL_START ))
 
 printf "Took this long for the length tarring ${END_TAR} (S) \n" > length_tar_times.txt

@@ -51,7 +51,7 @@ LENGTH=$( echo $MODEL | awk -F "-" '{print $1}')
 	PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
 	echo "Took this long for ${TIME_PREFIX} run, $END_GUB" > "../${MAIN_MODEL}_time.txt"
 	echo "Used this processor for the runs: $PROC" >> "../${MAIN_MODEL}_time.txt"
-    cp raw-raw-raw-${REP_DASH}-sim-branch-0.1-rec-0.5-length-${LENGTH}-JC-JC.treefile ./${SIMUL_LOC}${REP}_data/${BASIO}/ 
+    cp raw-raw-raw-${REP_DASH}-sim-branch-0.1-rec-0.5-length-${LENGTH}-JC-JC.treefile ${SIMUL_LOC}${REP}_data/${BASIO}/ 
 	cd ../../../
 	
 
