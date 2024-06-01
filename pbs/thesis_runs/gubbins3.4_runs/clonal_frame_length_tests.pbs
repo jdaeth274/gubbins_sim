@@ -13,7 +13,7 @@ cd ~/../ephemeral/gubbins_testing/length_runs
 ## Get the run models 
 MODEL=$( head -n $PBS_ARRAY_INDEX ~/gubbins_testing/old_gubbins_length.txt | tail -n 1)
 
-SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/length_tests/length_tests"
+SIMUL_LOC="/rds/general/user/jd2117/ephemeral/gubbins_testing/simul_data/length_tests/length_tests/"
 REP=$( echo $MODEL | awk -F "-" '{print "rep_"$1}')
 REP_DASH=$( echo $MODEL | awk -F "-" '{print "rep-"$1}')
 SEQ_LENGTH=$(echo $MODEL | awk -F "-" '{print $2}')
