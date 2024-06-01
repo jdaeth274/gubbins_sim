@@ -65,7 +65,7 @@ cp $TREFILE ./
 TIME_PREFIX="${MAIN_MODEL}-${REP_DASH}-seq-${SEQ_LENGTH}"
 echo $PWD
 START_GUB=$SECONDS
-/usr/bin/time -v ClonalFrameML "${IQ_PREFIX}.tre" "${BASIO}-exact.aln" \
+/usr/bin/time -v ClonalFrameML "${IQ_PREFIX}.treefile" "${BASIO}-exact.aln" \
 "${MAIN_MODEL}-${REP_DASH}-${BASIO}-JC-JC" > gubbins_log 2>&1 
 END_GUB=$(( SECONDS - START_GUB ))
 PROC=$(cat /proc/cpuinfo | grep 'model name' | uniq)
