@@ -29,10 +29,12 @@ for K in {1..10};
 do 
 cd "rep_${K}_runs"
 ## Now we need to go through each of the sim conditions 
-cd "sim-branch-0.1-rec-0.5-length-1000"
+while read length <&3 
+do
+cd "sim-branch-0.1-rec-0.5-length-${length}"
 cat $MODEL_FILE | while read line
 do 
-echo "$MODEL_NUM"
+echo "$length"
 TIM_FILE="${line}_time.txt"
 echo $TIM_FILE
 if [ -f $TIM_FILE ]
@@ -45,7 +47,9 @@ grep "Maximum resident set size" $CURRENT_GUBB >> $OUT_FILE || echo "No memory u
 fi
 MODEL_NUM=$(( MODEL_NUM + 1 ))
 done
-cd ../../
+cd ../
+done 3< /rds/general/user/jd2117/home/gubbins_testing/length_50_500.txt
+cd ../
 done 
 
 
