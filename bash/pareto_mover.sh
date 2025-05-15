@@ -21,7 +21,7 @@ do
         do  
             cd $model 
             SIM=$(basename $line)
-            if [ -e "${model}-rep-${K}.final_tree.tre"]
+            if [ -e "${model}-rep-${K}.final_tree.tre" ]
             then
                 cp *per_branch* "../../../pareto_0_gubbins_csvs/${model}-rep-${K}-${SIM}-JC-JC.per_branch_statistics.csv"
                 cp *node_labelled* "../../../pareto_0_gubbins_trees/${model}-rep-${K}-${SIM}-JC-JC.node_labelled.final_tree.tre" 
