@@ -21,10 +21,15 @@ do
         do  
             cd $model 
             SIM=$(basename $line)
-            cp *per_branch* "../../../pareto_0_gubbins_csvs/${model}-rep-${K}-${SIM}-JC-JC.per_branch_statistics.csv"
-            cp *node_labelled* "../../../pareto_0_gubbins_trees/${model}-rep-${K}-${SIM}-JC-JC.node_labelled.final_tree.tre" 
-            cp *recombination_predictions.gff "../../../pareto_0_gubbins_gff/${model}-rep-${K}-${SIM}-JC-JC.recombination_predictions.gff"
-            printf "Done on ${K}-${SIM}-${model}\n"
+            if [ -e "${model}-rep-${K}.final_tree.tre"]
+            then
+                cp *per_branch* "../../../pareto_0_gubbins_csvs/${model}-rep-${K}-${SIM}-JC-JC.per_branch_statistics.csv"
+                cp *node_labelled* "../../../pareto_0_gubbins_trees/${model}-rep-${K}-${SIM}-JC-JC.node_labelled.final_tree.tre" 
+                cp *recombination_predictions.gff "../../../pareto_0_gubbins_gff/${model}-rep-${K}-${SIM}-JC-JC.recombination_predictions.gff"
+                printf "Done on ${K}-${SIM}-${model}\n"
+            else
+                printf "Error on ${K}-${SIM}-${model}\n"
+                printf "${K}-${SIM}-${model}\n" >> ../../../error_runs.txt
             cd ../
         done 3< ~/gubbins_testing/gubbins_3.3_simple_complex.txt
         cd ../
