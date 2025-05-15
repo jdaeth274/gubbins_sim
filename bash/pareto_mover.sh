@@ -19,7 +19,15 @@ do
         cd $line
         while read model <&3
         do  
-            cd $model 
+            if [ -e $model ]
+            then 
+                cd $model 
+            else
+                printf "Error on ${K}-${SIM}-${model}\n"
+                printf "${K}-${SIM}-${model}\n" >> ../../error_runs.txt
+                continue
+            fi
+
             SIM=$(basename $line)
             if [ -e "${model}-rep-${K}.final_tree.tre" ]
             then
