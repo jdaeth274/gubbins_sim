@@ -30,6 +30,7 @@ do
             else
                 printf "Error on ${K}-${SIM}-${model}\n"
                 printf "${K}-${SIM}-${model}\n" >> ../../../error_runs.txt
+            fi
             cd ../
         done 3< ~/gubbins_testing/gubbins_3.3_simple_complex.txt
         cd ../
