@@ -3,8 +3,8 @@
 #PBS -J 1-240
 
 set -e
-source /rds/general/user/jd2117/home/miniforge3/bin/activate gubbins_env
-GUBB_EXC="/rds/general/user/jd2117/home/acba_legion_2024/gubbins/python/run_gubbins.py"
+source /rds/general/user/jd2117/home/miniforge3/bin/activate gubbins_git_mamba
+GUBB_EXC="run_gubbins.py"
 
 ## Switch to the run directory 
 mkdir -p ~/../ephemeral/gubbins_testing/pareto_0_runs
