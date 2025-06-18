@@ -35,6 +35,7 @@ do
                 cp *node_labelled* "../../../pareto_0_gubbins_trees/${model}-rep-${K}-${SIM}-JC-JC.node_labelled.final_tree.tre" 
                 cp *recombination_predictions.gff "../../../pareto_0_gubbins_gff/${model}-rep-${K}-${SIM}-JC-JC.recombination_predictions.gff"
                 printf "Done on ${K}-${SIM}-${model}\n"
+                printf "Done on ${K}-${SIM}-${model}\n" >> ../../../models_finished_branch.txt
             else
                 printf "Error on ${K}-${SIM}-${model}\n"
                 printf "${K}-${SIM}-${model}\n" >> ../../../error_runs.txt
