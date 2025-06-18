@@ -17,6 +17,9 @@ do
     cat dir_list.txt | while read line;
     do 
         cd $line
+        printf "###########################\n"
+        printf "${line}\n"
+        printf "\n"
         while read model <&3
         do  
             if [ -e $model ]
