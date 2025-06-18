@@ -41,7 +41,7 @@ for K in {1..10}; do
                 printf "\n" >> "../../../error_messages.txt"
                 printf "${K}-${SIM}-${model}\n" >> "../../../error_messages.txt"
                 printf "\n" >> "../../../error_messages.txt"
-                tail -n 50 ../../../error_messages.txt >> "../../../error_messages.txt"
+                tail -n 50 gubbins_log ../../../error_messages.txt >> "../../../error_messages.txt"
                 printf "\n\n" >> "../../../error_messages.txt"
             fi
             cd ..
